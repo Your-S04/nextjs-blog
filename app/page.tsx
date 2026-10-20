@@ -1,3 +1,4 @@
+import Link from "next/link";
 
 export default function Home() {
   const name = "Haoran";
@@ -17,7 +18,7 @@ export default function Home() {
 
       <section id="about">
         <p>关于</p>
-        <p>Next.js 学习中~</p>
+        <Link href="/about" className="text-blue-500 underline">Next.js 学习中～</Link>
       </section>
 
       <footer>© 2026 {name} </footer>
