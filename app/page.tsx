@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 export default function Home() {
-  const name = "Haoran";
   return (
     <main>
       <section id="articles">
@@ -12,8 +11,6 @@ export default function Home() {
         <p>关于</p>
         <Link href="/about" className="text-blue-500 underline">Next.js 学习中～</Link>
       </section>
-
-      <footer>© 2026 {name} </footer>
     </main>
   );
 }
