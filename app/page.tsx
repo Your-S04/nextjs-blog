@@ -4,14 +4,6 @@ export default function Home() {
   const name = "Haoran";
   return (
     <main>
-      <header>
-        <a href="#top">Hi.</a>
-        <nav aria-label="导航">
-          <a href="#articles">文章</a>
-          <a href="#about">关于</a>
-        </nav>
-      </header>
-
       <section id="articles">
         <p>文章</p>
       </section>
