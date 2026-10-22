@@ -230,12 +230,12 @@
   .p3-split-blue {
     clip-path: none;
   }
+  /* 移动端保留无序感:轻微重叠 + 随机方向(幅度为桌面的一半) */
   .p3-col-item {
-    margin-top: 0;
-    margin-right: 0;
+    margin-top: -8px;
   }
   .p3-bar {
-    transform: none;
+    transform: rotate(var(--rot)) skewX(var(--skw));
   }
 }
 

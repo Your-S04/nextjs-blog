@@ -45,6 +45,14 @@ export default function TagsPage() {
       <div aria-hidden className="fixed inset-0 z-0">
         {/* 右侧蓝色区:桌面斜切分割,移动端全屏 */}
         <div className="p3-split-blue absolute inset-y-0 right-0 w-[62%] max-md:inset-0 max-md:w-full bg-[#1B2FD8]" />
+        {/* 深蓝斜切页:仅移动端(整页深蓝),与波点转场纱幕形成对比;桌面不需要 */}
+        <div
+          className="absolute inset-y-0 right-0 w-full hidden max-md:block"
+          style={{
+            clipPath: "polygon(14% 0, 0 100%, 100% 100%, 100% 0)",
+            background: "#0a2a70",
+          }}
+        />
         {/* 左侧白色区:仅桌面 */}
         <div className="absolute inset-y-0 left-0 w-[40%] bg-white max-md:hidden" />
         {/* 竖排 TAGS 主体:仅桌面;移动端改用下方的小 Tags. 标题 */}
