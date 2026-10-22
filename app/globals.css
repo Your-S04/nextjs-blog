@@ -201,6 +201,17 @@
   }
 }
 
+/* 触屏:点按 tag 条目时强制进入 hover 视觉态(与转场同时播放) */
+.p3-touch-on .p3-idle-text {
+  opacity: 0 !important;
+}
+.p3-touch-on .p3-tri-shadow,
+.p3-touch-on .p3-tri-white,
+.p3-touch-on .p3-hover-black,
+.p3-touch-on .p3-hover-red {
+  opacity: 1 !important;
+}
+
 /* ===== 桌面/移动分流:桌面实验构图,移动端(≤767px)单列简化 ===== */
 .p3-split-blue {
   clip-path: polygon(38% 100%, 52% 0, 100% 0, 100% 100%);

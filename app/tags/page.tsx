@@ -47,13 +47,20 @@ export default function TagsPage() {
         <div className="p3-split-blue absolute inset-y-0 right-0 w-[62%] max-md:inset-0 max-md:w-full bg-[#1B2FD8]" />
         {/* 左侧白色区:仅桌面 */}
         <div className="absolute inset-y-0 left-0 w-[40%] bg-white max-md:hidden" />
-        {/* 竖排 TAGS 主体:桌面居中白区;移动端顶部横排横幅 */}
-        <div className="absolute inset-y-0 left-0 flex w-[40%] items-center justify-center max-md:inset-x-0 max-md:bottom-auto max-md:top-0 max-md:w-full max-md:py-10">
+        {/* 竖排 TAGS 主体:仅桌面;移动端改用下方的小 Tags. 标题 */}
+        <div className="absolute inset-y-0 left-0 flex w-[40%] items-center justify-center max-md:hidden">
           <h1 className="p3-drift -rotate-90 whitespace-nowrap font-brand text-[20vh] font-black italic leading-none tracking-tighter text-[#1B2FD8] max-md:rotate-0 max-md:text-6xl">
             TAGS<span className="text-[#00C8F0]">.</span>
           </h1>
         </div>
       </div>
+
+      {/* 小 Tags. 标题:仅移动端(桌面用左侧竖排 TAGS 主体) */}
+      <h1 className="relative z-10 mb-6 ml-1.5 w-fit -skew-x-6 bg-foreground px-4 py-1 font-brand text-2xl font-bold italic uppercase text-background p3-in max-md:flex md:hidden">
+        <span className="inline-block skew-x-6">
+          Tags<span className="text-accent">.</span>
+        </span>
+      </h1>
 
       {groups.length === 0 ? (
         <p className="relative z-10 text-faint">空</p>
@@ -61,7 +68,7 @@ export default function TagsPage() {
         // 数量扩展:错峰与位移全部封顶,tag 再多排版也不会失控。
         // 移动端(≤767px):单列、无重叠、无旋转,p3-col-item/p3-bar 的媒体查询接管
         <ul
-          className={`relative z-10 grid grid-cols-1 gap-x-10 pb-4 max-md:pt-44 ${columns.length > 1 ? "md:grid-cols-2" : ""}`}
+          className={`relative z-10 grid grid-cols-1 gap-x-10 pb-4 max-md:px-4 ${columns.length > 1 ? "md:grid-cols-2" : ""}`}
         >
           {columns.map((col, ci) => (
             <div key={ci} className="flex flex-col items-end max-md:items-stretch">
