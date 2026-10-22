@@ -58,7 +58,7 @@ export default async function PostPage({ params }: Props) {
 
       <div className="mt-10 border-t border-gray-100 pt-4">
         <Link href="/posts" className="text-sm text-blue-600 hover:underline">
-          ← 全部文章
+          all
         </Link>
       </div>
     </article>

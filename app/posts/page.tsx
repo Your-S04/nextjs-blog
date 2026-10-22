@@ -11,7 +11,7 @@ export default function PostsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">ALL</h1>
+      <h1 className="text-2xl font-bold mb-6">All Posts</h1>
       {posts.length === 0 ? (
         <p className="text-gray-400">空 </p>
       ) : (

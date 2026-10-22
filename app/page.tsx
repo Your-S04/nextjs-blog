@@ -3,13 +3,13 @@ import LatestPosts from "@/components/LatestPosts";
 
 export default function Home() {
   return (
-    <main>
+    <div>
       <LatestPosts />
 
-      <section id="about">
-        <p>关于</p>
-        <Link href="/about" className="text-blue-500 underline">Next.js 学习中～</Link>
+      <section id="about" className="mt-10">
+        <h2 className="text-lg font-semibold">About</h2>
+        <Link href="/about" className="hover:text-blue-600">Next.js 学习中～</Link>
       </section>
-    </main>
+    </div>
   );
 }
