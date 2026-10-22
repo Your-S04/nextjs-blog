@@ -56,8 +56,8 @@ export default async function PostPage({ params }: Props) {
         <ReactMarkdown>{content}</ReactMarkdown>
       </div>
 
-      <div className="mt-10 border-t border-gray-100 pt-4">
-        <Link href="/posts" className="text-sm text-blue-600 hover:underline">
+      <div className="mt-6 text-center">
+        <Link href="/posts" className="text-sm hover:text-blue-600">
           all
         </Link>
       </div>
