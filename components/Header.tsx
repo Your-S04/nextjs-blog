@@ -14,9 +14,14 @@ export default function Header() {
     const pathname = usePathname();
 
     return (
-        <header className="border-b border-border">
+        <header className="relative z-20 border-b border-border">
             <nav className="relative mx-auto flex max-w-2xl items-center justify-center gap-6 p-4">
-                <Link href="/" className="absolute left-4 text-lg font-bold font-brand">Kiyone</Link>
+                <Link
+                  href="/"
+                  className="absolute left-4 -skew-x-6 bg-foreground px-2 py-0.5 text-lg font-bold font-brand text-background"
+                >
+                  <span className="inline-block skew-x-6">Kiyone</span>
+                </Link>
                 <div className="flex gap-4">
                     {links.map(({href, label}) => {
                         const active = href === "/" ? pathname === "/" : pathname.startsWith(href);

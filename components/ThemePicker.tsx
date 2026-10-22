@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { applyTheme, getStoredTheme, THEMES, type ThemeId } from "@/lib/theme";
 
 export default function ThemePicker() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<ThemeId>("system");
   const [mounted, setMounted] = useState(false);
@@ -38,6 +40,8 @@ export default function ThemePicker() {
     applyTheme(id);
     setCurrent(id);
     setOpen(false);
+    /* 选 P3 主题 → 直达 P3 风格的 tag 页 */
+    if (id === "p3") router.push("/tags");
   };
 
   const active = THEMES.find((t) => t.id === current) ?? THEMES[4];

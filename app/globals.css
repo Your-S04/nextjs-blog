@@ -49,6 +49,18 @@
   --accent: #38bdf8;
 }
 
+/* ===== P3:女神异闻录3 的克莱因蓝 + 青 ===== */
+.p3 {
+  --background: #0a2a70;
+  --foreground: #eef4ff;
+  --muted: #a9c0ec;
+  --faint: #6f8fc9;
+  --border: #1c3f95;
+  --surface: #10368a;
+  --surface-hover: #1848ab;
+  --accent: #00c8f0;
+}
+
 /* ===== 未来更多主题:再加一个选择器块即可,如 =====
 .sepia {
   --background: #f4ecd8;
@@ -75,6 +87,164 @@
 
 /* 允许个别场景使用 dark: 变体 */
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   P3 实验:tag 页朋克海报样式(独立飞地,不影响全局 token)
+   色彩:克莱因蓝 #1B2FD8 / 朱红 #E60012 / 青 #00C8F0 / 黑白
+   ============================================================ */
+/* 入场:方向由 --edx 控制,带过冲回弹(夸张但受 reduced-motion 约束) */
+@keyframes p3-in {
+  0% {
+    opacity: 0;
+    translate: var(--edx, -48px) 12px;
+    scale: 0.9;
+  }
+  70% {
+    opacity: 1;
+    translate: calc(var(--edx, -48px) * -0.16) -4px;
+    scale: 1.04;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+.p3-in {
+  animation: p3-in 0.22s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+/* 双层色块:同形不同位;hover 时各自按视差距离滑入 + 过冲 */
+.p3-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  scale: 0.75;
+  translate: var(--ox) var(--oy);
+  box-shadow: 0 0 0 2px #0a0a0a;
+  transition:
+    opacity 0.1s ease,
+    translate 0.18s cubic-bezier(0.3, 1.7, 0.5, 1),
+    scale 0.18s cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+.group:hover .p3-layer {
+  opacity: 1;
+  scale: 1;
+  translate: calc(var(--ox) + var(--dx)) calc(var(--oy) + var(--dy));
+}
+/* 静置文字:透明度走变量(不能内联,否则压过 hover 规则);
+   无 transition —— 层与层瞬时切换,消灭交叉淡入的重影 */
+.p3-idle-text {
+  color: var(--idle-c);
+  opacity: var(--idle-o);
+}
+.group:hover .p3-idle-text {
+  opacity: 0;
+}
+.p3-text {
+  color: var(--idle, currentColor);
+  transition:
+    color 0.08s steps(1),
+    translate 0.18s cubic-bezier(0.3, 1.7, 0.5, 1),
+    scale 0.18s cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+.group:hover .p3-text {
+  translate: var(--tx, 6px) 0;
+  scale: 1.07;
+  color: var(--tc);
+}
+/* 白色斜切三角形(hover):红色硬影 = 同形复制 + 固定位移,全站方向一致 */
+.p3-tri {
+  position: absolute;
+  opacity: 0;
+  scale: 0.85;
+  translate: var(--ox, 0px) var(--oy, 0px);
+  transition:
+    opacity 0.1s ease,
+    translate 0.16s cubic-bezier(0.3, 1.7, 0.5, 1),
+    scale 0.16s cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+.group:hover .p3-tri {
+  opacity: 1;
+  scale: 1;
+  translate: calc(var(--ox, 0px) + 6px) calc(var(--oy, 0px) + 4px);
+}
+/* 碎片层的常驻悬浮(仅 translateY,与元素自身的 skew/clip 互不干扰) */
+@keyframes p3-float {
+  0%,
+  100% {
+    translate: 0 -2px;
+  }
+  50% {
+    translate: 0 2px;
+  }
+}
+.p3-float {
+  animation: p3-float 2.6s ease-in-out infinite;
+}
+/* 背景装饰大字的缓慢漂移 */
+@keyframes p3-drift {
+  from {
+    rotate: -2deg;
+  }
+  to {
+    rotate: -5deg;
+  }
+}
+.p3-drift {
+  animation: p3-drift 5s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .p3-in,
+  .p3-float,
+  .p3-drift {
+    animation: none;
+  }
+}
+
+/* 触屏:第一次点按链接(p3-touch-on)时强制进入 hover 视觉态 */
+.p3-touch-on .p3-idle-text {
+  opacity: 0 !important;
+}
+.p3-touch-on .p3-tri-shadow,
+.p3-touch-on .p3-tri-white,
+.p3-touch-on .p3-hover-black,
+.p3-touch-on .p3-hover-red {
+  opacity: 1 !important;
+}
+
+/* ===== 页面转场纱幕:蓝底波点圆,右扩→左收 ===== */
+.p3-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  background-color: #1b2fd8;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.28) 1.5px,
+    transparent 1.6px
+  );
+  background-size: 14px 14px;
+  clip-path: circle(0% at 100% 50%);
+}
+.p3-veil-cover {
+  clip-path: circle(141% at 100% 50%);
+}
+/* 覆盖态:锚点移到左缘,保持全覆盖 */
+.p3-veil-covered {
+  clip-path: circle(142% at 0% 50%);
+}
+/* 揭示:圆向左缘收合,新页面从右向左带出 */
+.p3-veil-reveal {
+  clip-path: circle(0% at 0% 50%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .p3-veil-cover {
+    transition: clip-path 0.38s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .p3-veil-reveal {
+    transition: clip-path 0.45s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+}
 
 body {
   background: var(--background);
