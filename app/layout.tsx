@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/space-grotesk";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { BOOTSTRAP_SCRIPT } from "@/lib/theme";
 
 export const metadata: Metadata = {
   title: "A Blog",
@@ -10,7 +12,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: {children: React.ReactNode}) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
+      <head>
+        {/* React 渲染前设置主题类,避免暗色用户白屏闪烁 */}
+        <script dangerouslySetInnerHTML={{ __html: BOOTSTRAP_SCRIPT }} />
+      </head>
       <body className="flex min-h-screen flex-col">
         <Header />
         <main  className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">{children}</main>

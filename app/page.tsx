@@ -8,7 +8,7 @@ export default function Home() {
 
       <section id="about" className="mt-10">
         <h2 className="text-lg font-semibold">About</h2>
-        <Link href="/about" className="hover:text-blue-600">Next.js 学习中～</Link>
+        <Link href="/about" className="hover:text-accent">Next.js 学习中～</Link>
       </section>
     </div>
   );

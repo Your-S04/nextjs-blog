@@ -33,8 +33,8 @@ export default async function PostPage({ params }: Props) {
   return (
     <article>
       <header className="mb-6">
-        <h1 className="text-2xl font-bold">{meta.title}</h1>
-        <div className="mt-2 flex items-center gap-3 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold font-brand">{meta.title}</h1>
+        <div className="mt-2 flex items-center gap-3 text-sm text-muted">
           <time>{meta.date}</time>
           {meta.tags.length > 0 && (
             <span className="flex gap-2">
@@ -42,7 +42,7 @@ export default async function PostPage({ params }: Props) {
                 <Link
                   key={t}
                   href={`/tags/${encodeURIComponent(t)}`}
-                  className="text-xs bg-gray-100 rounded-full px-2 py-0.5 hover:bg-gray-200"
+                  className="text-xs bg-surface rounded-full px-2 py-0.5 hover:bg-surface-hover"
                 >
                   #{t}
                 </Link>
@@ -52,12 +52,12 @@ export default async function PostPage({ params }: Props) {
         </div>
       </header>
 
-      <div className="space-y-4 leading-relaxed [&_code]:rounded [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-bold [&_li]:ml-5 [&_li]:list-disc [&_pre]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-gray-900 [&_pre]:p-4 [&_pre_code]:bg-transparent [&_pre_code]:text-gray-100">
+      <div className="space-y-4 leading-relaxed [&_h1]:font-brand [&_h2]:font-brand [&_code]:rounded [&_code]:bg-surface [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-bold [&_li]:ml-5 [&_li]:list-disc [&_pre]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-gray-900 [&_pre]:p-4 [&_pre_code]:bg-transparent [&_pre_code]:text-gray-100">
         <ReactMarkdown>{content}</ReactMarkdown>
       </div>
 
       <div className="mt-6 text-center">
-        <Link href="/posts" className="text-sm hover:text-blue-600">
+        <Link href="/posts" className="text-sm hover:text-accent">
           all
         </Link>
       </div>

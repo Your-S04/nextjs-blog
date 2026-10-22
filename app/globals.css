@@ -1,12 +1,82 @@
 @import "tailwindcss";
 
+/* ===== 语义色 Token(亮色 = 默认)===== */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --muted: #4b5563;          /* 次要文字:页脚、导航未选中 */
+  --faint: #9ca3af;          /* 最弱文字:日期、占位 */
+  --border: #e5e7eb;         /* 边框、分隔线 */
+  --surface: #f3f4f6;        /* 标签胶囊、行内代码底 */
+  --surface-hover: #e5e7eb;  /* surface 的 hover 态 */
+  --accent: #2563eb;         /* 链接、导航激活 */
 }
+
+/* ===== 暗色:在 <html> 上加 .dark 整体切换 ===== */
+.dark {
+  --background: #0b0f19;
+  --foreground: #e5e7eb;
+  --muted: #9ca3af;
+  --faint: #6b7280;
+  --border: #1f2937;
+  --surface: #1f2937;
+  --surface-hover: #374151;
+  --accent: #3b82f6;
+}
+
+/* ===== 墨纸:暖色护眼 ===== */
+.sepia {
+  --background: #f4ecd8;
+  --foreground: #433422;
+  --muted: #7a6a52;
+  --faint: #a89877;
+  --border: #e0d5b8;
+  --surface: #ece1c4;
+  --surface-hover: #e2d4ae;
+  --accent: #b45309;
+}
+
+/* ===== 深海:冷蓝夜色 ===== */
+.ocean {
+  --background: #0f1b2d;
+  --foreground: #dbe7f5;
+  --muted: #8fa8c4;
+  --faint: #5d7590;
+  --border: #1e3350;
+  --surface: #1a2c47;
+  --surface-hover: #24395c;
+  --accent: #38bdf8;
+}
+
+/* ===== 未来更多主题:再加一个选择器块即可,如 =====
+.sepia {
+  --background: #f4ecd8;
+  ...
+}
+================================================= */
+
+/* 标题品牌字体:英文走 Space Grotesk,中文回退文泉驿 */
+@theme {
+  --font-brand: "Space Grotesk Variable", Arial, "WenQuanYi Micro Hei", sans-serif;
+}
+
+/* 把语义变量映射成 Tailwind 工具类(bg-background / text-muted / border-border ...) */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-accent: var(--accent);
+}
+
+/* 允许个别场景使用 dark: 变体 */
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, sans-serif;
+  font-family: Arial, "WenQuanYi Micro Hei", "WenQuanYi Zen Hei", sans-serif;
 }
