@@ -24,16 +24,17 @@
   --accent: #3b82f6;
 }
 
-/* ===== 墨纸:暖色护眼 ===== */
-.sepia {
-  --background: #f4ecd8;
-  --foreground: #433422;
-  --muted: #7a6a52;
-  --faint: #a89877;
-  --border: #e0d5b8;
-  --surface: #ece1c4;
-  --surface-hover: #e2d4ae;
-  --accent: #b45309;
+/* ===== 墨纸:暖色护眼(柔和低饱和,层级对比充足)=====
+   类名用 t- 前缀:主题类名不能和 Tailwind 工具类同名 */
+.t-sepia {
+  --background: #f5efe3;
+  --foreground: #3f3629;
+  --muted: #6f6350;
+  --faint: #8f8168;
+  --border: #e2d7c1;
+  --surface: #e7dabb;
+  --surface-hover: #d9c795;
+  --accent: #8f6218;
 }
 
 /* ===== 深海:冷蓝夜色 ===== */

@@ -47,7 +47,8 @@ export default function ThemePicker() {
       <button
         type="button"
         aria-label="切换外观"
-        title="切换外观"
+        aria-haspopup="menu"
+        aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface hover:bg-surface-hover"
       >
@@ -65,13 +66,15 @@ export default function ThemePicker() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-10 mt-2 w-44 rounded-lg border border-border bg-background p-1.5 shadow-lg">
+        <div role="menu" className="absolute right-0 top-full z-50 mt-2 w-44 rounded-lg border border-border bg-background p-1.5 shadow-xl">
           {THEMES.map((t) => (
             <button
               key={t.id}
               type="button"
+              role="menuitemradio"
+              aria-checked={current === t.id}
               onClick={() => pick(t.id)}
-              className={`flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-surface ${
+              className={`flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-surface-hover hover:text-accent ${
                 current === t.id ? "text-accent" : "text-foreground"
               }`}
             >
@@ -80,6 +83,7 @@ export default function ThemePicker() {
                 style={{
                   background: `conic-gradient(${t.swatch[0]} 0 120deg, ${t.swatch[1]} 120deg 240deg, ${t.swatch[2]} 240deg 360deg)`,
                 }}
+                aria-hidden
               />
               <span className="flex-1 text-left">{t.label}</span>
               {current === t.id && <span aria-hidden>✓</span>}
