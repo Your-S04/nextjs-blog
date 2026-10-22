@@ -15,7 +15,7 @@ export default function Header() {
     return (
         <header className="border-b border-gray-200">
             <nav className="max-w-2xl mx-auto flex items-center gap-6 p-4">
-                <Link href="/" className="text-lg font-bold">Kiyo</Link>
+                <Link href="/" className="text-lg font-bold">Kiyone</Link>
                 <div className="flex gap-4">
                     {links.map(({href, label}) => {
                         const active = href === "/" ? pathname === "/" : pathname.startsWith(href);

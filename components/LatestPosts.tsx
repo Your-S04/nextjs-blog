@@ -11,10 +11,7 @@ export default function LatestPosts({ count = 5 }: { count?: number }) {
     return (
         <section>
             <div className="flex items-baseline justify-between mb-4">
-                <h2 className="text-xl font-bold">Latest</h2>
-                <Link href="/posts" className="text-sm text-blue-600 hover:underline">
-                    all
-                </Link>
+                <h2 className="text-xl font-bold">Latest Posts</h2>
             </div>
             <ul className="space-y-3">
                 {latest.map((p) => (
@@ -35,6 +32,11 @@ export default function LatestPosts({ count = 5 }: { count?: number }) {
                     </li>
                 ))}
             </ul>
+            <div>
+                <Link href="/posts" className="text-sm text-blue-600 hover:underline">
+                    all
+                </Link>
+            </div>
         </section>
     )
 }

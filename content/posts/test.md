@@ -1,7 +1,7 @@
 ---
 title: test
-date: a good date for a test
-tag: [test]
+date: 4004 BCE-10-22
+tags: [test]
 ---
 
 ## test

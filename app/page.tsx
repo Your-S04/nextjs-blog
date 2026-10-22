@@ -1,11 +1,10 @@
 import Link from "next/link";
+import LatestPosts from "@/components/LatestPosts";
 
 export default function Home() {
   return (
     <main>
-      <section id="articles">
-        <p>文章</p>
-      </section>
+      <LatestPosts />
 
       <section id="about">
         <p>关于</p>
