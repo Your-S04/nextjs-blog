@@ -22,17 +22,6 @@ export default function P3TransitionLink({
   const router = useRouter();
 
   const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const touch = window.matchMedia("(hover: none)").matches;
-    const self = e.currentTarget;
-
-    /* 触屏两段式:第一次点按只显示 hover 态(没有真实 hover 可用),
-       第二次点按才播放转场。只对带 hover 视觉的 tag 条目生效。 */
-    if (touch && self.querySelector(".p3-idle-text") && !self.classList.contains("p3-touch-on")) {
-      e.preventDefault();
-      self.classList.add("p3-touch-on");
-      return;
-    }
-
     /* reduced-motion 或转场进行中:退回普通导航 */
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const veil = document.getElementById("p3-veil");

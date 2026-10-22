@@ -201,15 +201,31 @@
   }
 }
 
-/* 触屏:第一次点按链接(p3-touch-on)时强制进入 hover 视觉态 */
-.p3-touch-on .p3-idle-text {
-  opacity: 0 !important;
+/* ===== 桌面/移动分流:桌面实验构图,移动端(≤767px)单列简化 ===== */
+.p3-split-blue {
+  clip-path: polygon(38% 100%, 52% 0, 100% 0, 100% 100%);
 }
-.p3-touch-on .p3-tri-shadow,
-.p3-touch-on .p3-tri-white,
-.p3-touch-on .p3-hover-black,
-.p3-touch-on .p3-hover-red {
-  opacity: 1 !important;
+.p3-col-item {
+  margin-top: -14px;
+  margin-right: var(--mr, 0px);
+}
+.p3-col-item:first-child {
+  margin-top: 0;
+}
+.p3-bar {
+  transform: rotate(var(--rot, 0deg)) skewX(var(--skw, 0deg));
+}
+@media (max-width: 767px) {
+  .p3-split-blue {
+    clip-path: none;
+  }
+  .p3-col-item {
+    margin-top: 0;
+    margin-right: 0;
+  }
+  .p3-bar {
+    transform: none;
+  }
 }
 
 /* ===== 页面转场纱幕:蓝底波点圆,右扩→左收 ===== */

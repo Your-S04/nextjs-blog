@@ -41,18 +41,15 @@ export default function TagsPage() {
   return (
     <div className="relative overflow-hidden">
       <P3Veil />
-      {/* ===== 全页背景:左白 + 右蓝撞色(分割线右上高左下低)+ 竖排 TAGS 主体(fixed) ===== */}
+      {/* ===== 全页背景:桌面左白右蓝斜分割 + 竖排 TAGS;移动端整页蓝 + 顶部横幅 ===== */}
       <div aria-hidden className="fixed inset-0 z-0">
-        {/* 右侧蓝色区:分割线右上(52%)高、左下(38%)低 */}
-        <div
-          className="absolute inset-y-0 right-0 w-[62%] bg-[#1B2FD8]"
-          style={{ clipPath: "polygon(38% 100%, 52% 0, 100% 0, 100% 100%)" }}
-        />
-        {/* 左侧白色区 */}
-        <div className="absolute inset-y-0 left-0 w-[40%] bg-white" />
-        {/* 竖排 TAGS 主体:在左侧白区居中;白色字 + 青色句点(右区配色) */}
-        <div className="absolute inset-y-0 left-0 flex w-[40%] items-center justify-center">
-          <h1 className="p3-drift -rotate-90 whitespace-nowrap font-brand text-[20vh] font-black italic leading-none tracking-tighter text-[#1B2FD8]">
+        {/* 右侧蓝色区:桌面斜切分割,移动端全屏 */}
+        <div className="p3-split-blue absolute inset-y-0 right-0 w-[62%] max-md:inset-0 max-md:w-full bg-[#1B2FD8]" />
+        {/* 左侧白色区:仅桌面 */}
+        <div className="absolute inset-y-0 left-0 w-[40%] bg-white max-md:hidden" />
+        {/* 竖排 TAGS 主体:桌面居中白区;移动端顶部横排横幅 */}
+        <div className="absolute inset-y-0 left-0 flex w-[40%] items-center justify-center max-md:inset-x-0 max-md:bottom-auto max-md:top-0 max-md:w-full max-md:py-10">
+          <h1 className="p3-drift -rotate-90 whitespace-nowrap font-brand text-[20vh] font-black italic leading-none tracking-tighter text-[#1B2FD8] max-md:rotate-0 max-md:text-6xl">
             TAGS<span className="text-[#00C8F0]">.</span>
           </h1>
         </div>
@@ -61,11 +58,13 @@ export default function TagsPage() {
       {groups.length === 0 ? (
         <p className="relative z-10 text-faint">空</p>
       ) : (
-        /* 数量扩展:错峰与位移全部封顶,tag 再多排版也不会失控。
-           列表放在右侧蓝区:右对齐,从右缘向左错落;超过 5 个 tag 分两列(上限两列) */
-        <ul className="relative z-10 grid grid-cols-1 gap-x-10 pb-4" style={columns.length > 1 ? { gridTemplateColumns: "1fr 1fr" } : undefined}>
+        // 数量扩展:错峰与位移全部封顶,tag 再多排版也不会失控。
+        // 移动端(≤767px):单列、无重叠、无旋转,p3-col-item/p3-bar 的媒体查询接管
+        <ul
+          className={`relative z-10 grid grid-cols-1 gap-x-10 pb-4 max-md:pt-44 ${columns.length > 1 ? "md:grid-cols-2" : ""}`}
+        >
           {columns.map((col, ci) => (
-            <div key={ci} className="flex flex-col items-end">
+            <div key={ci} className="flex flex-col items-end max-md:items-stretch">
               {col.map(({ g, gi }) => {
             const spec = p3spec(gi);
 
@@ -88,28 +87,28 @@ export default function TagsPage() {
             ];
             /* 红字副本的精确裁切区 = 三角的像素投影 */
             const absClip = `polygon(${triPoints.map(([x, y]) => `${x}px ${y}px`).join(", ")})`;
-            /* 影子同形:自身坐标系里的相对多边形,固定偏移 (9,9) */
-            const shadowClip = `polygon(0 ${apexRel}px, ${triW}px 0, ${triW}px ${triH}px)`;
-            /* 蓝底上的静置文字色:白 / 浅青 交替 */
+            /* 影子/白块:百分比顶点 → 被 max-width 钳制时形状等比缩放,不会残缺 */
+            const apexPct = Math.round((apexRel / triH) * 100);
+            const shadowClip = `polygon(0 ${apexPct}%, 100% 0%, 100% 100%)`;
+            /* 蓝底上的静置文字色:白 / 浅青交替 */
             const idleColor = gi % 2 === 0 ? "#eaf3ff" : "#9bd9f7";
 
             return (
               <li
                 key={g.tag}
-                className="p3-in relative hover:z-20"
+                className="p3-in p3-col-item relative hover:z-20"
                 style={
                   {
                     "--edx": spec.flip ? "56px" : "-56px",
+                    "--mr": `${Math.min(gi * 10, 50)}px`,
                     animationDelay: `${Math.min(gi * 60, 500)}ms`,
-                    marginRight: `${Math.min(gi * 10, 50)}px`,
-                    marginTop: gi < columns[0].length || columns.length === 1 ? 0 : "-14px", // 轻微重叠(列首不叠)
                   } as CSSProperties
                 }
               >
                 <P3TransitionLink
                   href={`/tags/${encodeURIComponent(g.tag)}`}
-                  className="group relative block w-fit py-1 pr-12"
-                  style={{ transform: `rotate(${spec.angle}deg) skewX(${spec.skew}deg)` }}
+                  className="p3-bar group relative block w-fit py-1 pr-12"
+                  style={{ "--rot": `${spec.angle / 2}deg`, "--skw": `${spec.skew}deg` } as CSSProperties}
                 >
                   {/* 红色硬影(与白块同形,固定偏移,方向全站一致) */}
                   <span
@@ -121,6 +120,7 @@ export default function TagsPage() {
                         top: `${oy + 9}px`,
                         width: `${triW}px`,
                         height: `${triH}px`,
+                        maxWidth: "calc(100vw - 48px)",
                         clipPath: shadowClip,
                         background: "#E60012",
                       } as CSSProperties
@@ -136,6 +136,7 @@ export default function TagsPage() {
                         top: `${oy}px`,
                         width: `${triW}px`,
                         height: `${triH}px`,
+                        maxWidth: "calc(100vw - 48px)",
                         clipPath: shadowClip,
                         background: "#ffffff",
                       } as CSSProperties
@@ -143,7 +144,7 @@ export default function TagsPage() {
                   />
                   {/* 静置文字:白/浅青交替(蓝底可读);hover 瞬时隐藏(无过渡,无重影) */}
                   <span
-                    className="p3-idle-text relative z-10 block whitespace-nowrap font-brand text-5xl font-bold italic"
+                    className="p3-idle-text relative z-10 block whitespace-nowrap font-brand text-5xl max-md:text-3xl font-bold italic"
                     style={
                       {
                         "--idle-c": idleColor,
