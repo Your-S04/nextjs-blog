@@ -50,6 +50,11 @@ export default function P3Veil() {
   useEffect(() => {
     if (prevPathRef.current === pathname) return;
     prevPathRef.current = pathname;
+    if (phaseRef.current === "covered") {
+      /* 慢 RSC 场景:2.5s 兜底已进覆盖态,路径此时才变化 → 直接揭示 */
+      requestAnimationFrame(() => requestAnimationFrame(() => set("reveal")));
+      return;
+    }
     if (phaseRef.current !== "cover") return;
     const elapsed = performance.now() - coverStartRef.current;
     const t = window.setTimeout(

@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { CSSProperties, ReactNode } from "react";
 
+const COVER_MS = 380;
+
 /* P3 转场链接:点击 → 派发 "p3:transition-start"(纱幕开始覆盖)
-   → 立即 router.push(纱幕持续覆盖直到新页就绪,由 P3Veil 揭示)。
-   不再盲等固定时长,揭示时机由新页就绪决定。 */
+   → 覆盖完成后才 router.push(全屏已遮,跳转无闪帧)
+   → 新页就绪后由 P3Veil 揭示。 */
 export default function P3TransitionLink({
   href,
   className,
@@ -27,14 +29,14 @@ export default function P3TransitionLink({
     const self = e.currentTarget;
     const touch = window.matchMedia("(hover: none)").matches;
 
-    /* 触屏:点按瞬间强制 hover 视觉态(与转场同时播放) */
+    /* 触屏:点按瞬间强制 hover 视觉态(与覆盖动画同时可见) */
     if (touch && self.querySelector(".p3-idle-text")) {
       self.classList.add("p3-touch-on");
     }
 
     e.preventDefault();
     window.dispatchEvent(new CustomEvent("p3:transition-start"));
-    router.push(href);
+    window.setTimeout(() => router.push(href), COVER_MS);
   };
 
   return (
