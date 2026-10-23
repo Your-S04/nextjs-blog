@@ -92,20 +92,18 @@
    P3 实验:tag 页朋克海报样式(独立飞地,不影响全局 token)
    色彩:克莱因蓝 #1B2FD8 / 朱红 #E60012 / 青 #00C8F0 / 黑白
    ============================================================ */
-/* 入场:方向由 --edx 控制,带过冲回弹(夸张但受 reduced-motion 约束) */
+/* 入场:方向由 --edx 控制,带过冲回弹(夸张但受 reduced-motion 约束)。
+   关键帧不含 opacity —— 元素永不处于透明帧,iOS 上动画未启动也不会隐身 */
 @keyframes p3-in {
   0% {
-    opacity: 0;
     translate: var(--edx, -48px) 12px;
     scale: 0.9;
   }
   70% {
-    opacity: 1;
     translate: calc(var(--edx, -48px) * -0.16) -4px;
     scale: 1.04;
   }
   100% {
-    opacity: 1;
     translate: 0 0;
     scale: 1;
   }
@@ -113,44 +111,24 @@
 .p3-in {
   animation: p3-in 0.22s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
-/* 双层色块:同形不同位;hover 时各自按视差距离滑入 + 过冲 */
-.p3-layer {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  scale: 0.75;
-  translate: var(--ox) var(--oy);
-  box-shadow: 0 0 0 2px #0a0a0a;
-  transition:
-    opacity 0.1s ease,
-    translate 0.18s cubic-bezier(0.3, 1.7, 0.5, 1),
-    scale 0.18s cubic-bezier(0.3, 1.7, 0.5, 1);
-}
-.group:hover .p3-layer {
-  opacity: 1;
-  scale: 1;
-  translate: calc(var(--ox) + var(--dx)) calc(var(--oy) + var(--dy));
-}
 /* 静置文字:透明度走变量(不能内联,否则压过 hover 规则);
+   hover 隐藏规则包在 (hover:hover) 里 —— iOS 触摸滚动会驻留 :hover,
+   不隔离的话划过的 tag 会被黑/55 副本盖住(不可见但可点击);
    无 transition —— 层与层瞬时切换,消灭交叉淡入的重影 */
 .p3-idle-text {
   color: var(--idle-c);
   opacity: var(--idle-o);
 }
-.group:hover .p3-idle-text {
-  opacity: 0;
-}
-.p3-text {
-  color: var(--idle, currentColor);
-  transition:
-    color 0.08s steps(1),
-    translate 0.18s cubic-bezier(0.3, 1.7, 0.5, 1),
-    scale 0.18s cubic-bezier(0.3, 1.7, 0.5, 1);
-}
-.group:hover .p3-text {
-  translate: var(--tx, 6px) 0;
-  scale: 1.07;
-  color: var(--tc);
+@media (hover: hover) {
+  .group:hover .p3-idle-text {
+    opacity: 0;
+  }
+  .group:hover .p3-tri-shadow,
+  .group:hover .p3-tri-white,
+  .group:hover .p3-hover-black,
+  .group:hover .p3-hover-red {
+    opacity: 1;
+  }
 }
 /* 白色斜切三角形(hover):红色硬影 = 同形复制 + 固定位移,全站方向一致 */
 .p3-tri {

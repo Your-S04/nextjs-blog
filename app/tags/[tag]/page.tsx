@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import P3PostBar from "@/components/P3PostBar";
 import P3TransitionLink from "@/components/P3TransitionLink";
-import P3Veil from "@/components/P3Veil";
 
 type Props = { params: Promise<{ tag: string }> };
 
@@ -50,7 +49,6 @@ export default async function TagPage({ params }: Props) {
 
   return (
     <div className="relative overflow-hidden">
-      <P3Veil />
       {/* 出血装饰大字(缓慢漂移) */}
       <span
         aria-hidden

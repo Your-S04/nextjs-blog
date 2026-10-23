@@ -1,35 +1,54 @@
 "use client";
 
-import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-/* 转场纱幕:挂在 /tags 与 /tags/[tag] 两页。
-   新页面挂载时若带着 "p3-veil = in" 标记,则先满屏覆盖,
-   再让圆向左缘收合,把新页面从右向左带出来。 */
+type Phase = "idle" | "cover" | "reveal";
+
+/* 转场纱幕(挂在本区共享 layout,实例跨页面存活):
+   - P3TransitionLink 派发 "p3:transition-start" → 进入 cover(覆盖全屏)
+   - 路径变化(新页面就绪)→ 进入 reveal(向左收合,揭示新页)
+   - 2.5s 兜底:导航失败等异常也会解除覆盖,不会卡死在覆盖态 */
 export default function P3Veil() {
+  const pathname = usePathname();
+  const [phase, setPhase] = useState<Phase>("idle");
+  const phaseRef = useRef<Phase>("idle");
+  const prevPathRef = useRef(pathname);
+
+  const set = (p: Phase) => {
+    phaseRef.current = p;
+    setPhase(p);
+  };
+
+  /* 转场请求(P3TransitionLink 派发) */
   useEffect(() => {
-    const veil = document.getElementById("p3-veil");
-    if (!veil) return;
-    let marked = false;
-    try {
-      marked = sessionStorage.getItem("p3-veil") === "in";
-      sessionStorage.removeItem("p3-veil");
-    } catch {
-      return;
-    }
-    if (!marked) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    /* 覆盖态锚点在左缘(满屏)→ 双 rAF 确保首帧生效 → 向左收合揭示 */
-    veil.classList.add("p3-veil-covered");
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        veil.classList.remove("p3-veil-covered");
-        veil.classList.add("p3-veil-reveal");
-        setTimeout(() => veil.classList.remove("p3-veil-reveal"), 500);
-      }),
-    );
+    const onStart = () => {
+      if (phaseRef.current !== "idle") return; // 进行中,忽略重复请求
+      set("cover");
+      window.setTimeout(() => {
+        if (phaseRef.current === "cover") set("reveal");
+      }, 2500);
+    };
+    window.addEventListener("p3:transition-start", onStart);
+    return () => window.removeEventListener("p3:transition-start", onStart);
   }, []);
 
-  return <div id="p3-veil" aria-hidden className="p3-veil" />;
+  /* 路径变化 = 新页面已渲染 → 揭示 */
+  useEffect(() => {
+    if (prevPathRef.current === pathname) return;
+    prevPathRef.current = pathname;
+    if (phaseRef.current === "cover") {
+      const t = window.setTimeout(() => set("reveal"), 60); // 等新页首帧绘制
+      return () => window.clearTimeout(t);
+    }
+  }, [pathname]);
+
+  /* 揭示动画(0.45s)结束后归位 */
+  useEffect(() => {
+    if (phase !== "reveal") return;
+    const t = window.setTimeout(() => set("idle"), 500);
+    return () => window.clearTimeout(t);
+  }, [phase]);
+
+  return <div aria-hidden data-phase={phase} className="p3-veil" />;
 }

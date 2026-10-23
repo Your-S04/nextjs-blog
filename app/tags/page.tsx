@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { getPostsGroupedByTag } from "@/lib/posts";
 import { p3spec } from "@/lib/p3";
 import P3TransitionLink from "@/components/P3TransitionLink";
-import P3Veil from "@/components/P3Veil";
 
 export const metadata: Metadata = {
   title: "标签",
@@ -29,7 +28,6 @@ export default function TagsPage() {
 
   return (
     <div className="relative overflow-hidden">
-      <P3Veil />
       {/* ===== 全页背景:桌面左白右蓝分割 + 竖排 TAGS.;移动端整页蓝 ===== */}
       <div aria-hidden className="fixed inset-0 z-0">
         {/* 右侧蓝色区:桌面斜切分割,移动端全屏 */}
@@ -103,7 +101,7 @@ export default function TagsPage() {
                   {/* 红色硬影(与白块同形,固定偏移,方向全站一致) */}
                   <span
                     aria-hidden
-                    className="p3-tri-shadow absolute z-0 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                    className="p3-tri-shadow absolute z-0 opacity-0 transition-opacity duration-100"
                     style={
                       {
                         left: `${ox + 9}px`,
@@ -119,7 +117,7 @@ export default function TagsPage() {
                   {/* 白色三角本体:左端点指向倾斜方向(带偏移),右端两点随文本长度伸缩 */}
                   <span
                     aria-hidden
-                    className="p3-tri-white absolute z-0 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                    className="p3-tri-white absolute z-0 opacity-0 transition-opacity duration-100"
                     style={
                       {
                         left: `${ox}px`,
@@ -150,14 +148,14 @@ export default function TagsPage() {
                   {/* hover 文字:三角外 = 半透明黑(瞬切) */}
                   <span
                     aria-hidden
-                    className="p3-hover-black absolute inset-0 z-20 block whitespace-nowrap font-brand text-5xl font-bold italic text-black/55 opacity-0 group-hover:opacity-100"
+                    className="p3-hover-black absolute inset-0 z-20 block whitespace-nowrap font-brand text-5xl font-bold italic text-black/55 opacity-0"
                   >
                     {g.tag}
                   </span>
                   {/* hover 文字:三角内 = 血红(裁切区 = 三角的像素投影,瞬切) */}
                   <span
                     aria-hidden
-                    className="p3-hover-red absolute inset-0 z-30 block whitespace-nowrap font-brand text-5xl font-bold italic text-[#c40000] opacity-0 group-hover:opacity-100"
+                    className="p3-hover-red absolute inset-0 z-30 block whitespace-nowrap font-brand text-5xl font-bold italic text-[#c40000] opacity-0"
                     style={{ clipPath: absClip } as CSSProperties}
                   >
                     {g.tag}
