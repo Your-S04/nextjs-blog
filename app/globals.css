@@ -226,18 +226,6 @@
 .p3-bar {
   transform: rotate(var(--rot, 0deg)) skewX(var(--skw, 0deg));
 }
-@media (max-width: 767px) {
-  .p3-split-blue {
-    clip-path: none;
-  }
-  /* 移动端保留无序感:轻微重叠 + 随机方向(幅度为桌面的一半) */
-  .p3-col-item {
-    margin-top: -8px;
-  }
-  .p3-bar {
-    transform: rotate(var(--rot)) skewX(var(--skw));
-  }
-}
 
 /* ===== 页面转场纱幕:蓝底波点圆,右扩→左收 ===== */
 .p3-veil {
