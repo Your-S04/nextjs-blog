@@ -43,10 +43,15 @@ export default function P3Veil() {
     }
   }, [pathname]);
 
-  /* 揭示动画(0.45s)结束后归位 */
+  /* 揭示动画(0.45s)结束后归位;揭示期间给 <html> 挂 p3-arriving,
+     驱动条目入场动画(错峰),结束(0.8s 后)摘除 → 基础态可见,永不隐身 */
   useEffect(() => {
     if (phase !== "reveal") return;
-    const t = window.setTimeout(() => set("idle"), 500);
+    document.documentElement.classList.add("p3-arriving");
+    const t = window.setTimeout(() => {
+      document.documentElement.classList.remove("p3-arriving");
+      set("idle");
+    }, 800);
     return () => window.clearTimeout(t);
   }, [phase]);
 

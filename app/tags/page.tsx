@@ -89,7 +89,7 @@ export default function TagsPage() {
                   {
                     "--edx": spec.flip ? "56px" : "-56px",
                     "--mr": `${Math.min(gi * 10, 50)}px`,
-                    animationDelay: `${Math.min(gi * 60, 500)}ms`,
+                    "--d": `${Math.min(gi * 60, 240)}ms`,
                   } as CSSProperties
                 }
               >
