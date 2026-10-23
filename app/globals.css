@@ -210,7 +210,7 @@
   transform: rotate(var(--rot, 0deg)) skewX(var(--skw, 0deg));
 }
 
-/* ===== 页面转场纱幕:蓝底波点圆,右扩→左收 ===== */
+/* ===== 页面转场纱幕:蓝底波点圆,右扩→左收(data-phase 驱动) ===== */
 .p3-veil {
   position: fixed;
   inset: 0;
@@ -224,22 +224,21 @@
   background-size: 14px 14px;
   clip-path: circle(0% at 100% 50%);
 }
-.p3-veil-cover {
+.p3-veil[data-phase="cover"] {
   clip-path: circle(141% at 100% 50%);
 }
-/* 覆盖态:锚点移到左缘,保持全覆盖 */
-.p3-veil-covered {
+/* 覆盖态:锚点瞬间换到左缘(全屏已覆盖,切换不可见),再从左收合 */
+.p3-veil[data-phase="covered"] {
   clip-path: circle(142% at 0% 50%);
 }
-/* 揭示:圆向左缘收合,新页面从右向左带出 */
-.p3-veil-reveal {
+.p3-veil[data-phase="reveal"] {
   clip-path: circle(0% at 0% 50%);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .p3-veil-cover {
+  .p3-veil[data-phase="cover"] {
     transition: clip-path 0.38s cubic-bezier(0.7, 0, 0.3, 1);
   }
-  .p3-veil-reveal {
+  .p3-veil[data-phase="reveal"] {
     transition: clip-path 0.45s cubic-bezier(0.7, 0, 0.3, 1);
   }
 }
