@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation";
-import ThemePicker from "./ThemePicker";
+import AuthWidget from "@/components/AuthWidget";
+import ThemePicker from "@/components/ThemePicker";
 
 const links = [
     {href:"/", label:"首页"},
@@ -32,8 +33,9 @@ export default function Header() {
                         )
                     })}
                 </div>
-                <div className="absolute right-4">
-                    <ThemePicker />
+                <div className="absolute right-4 flex items-center gap-3">
+                  <AuthWidget />
+                  <ThemePicker />
                 </div>
             </nav>
         </header>

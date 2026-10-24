@@ -24,6 +24,14 @@ const bindings = [
     tarball: "tailwindcss-oxide-linux-arm64-gnu-4.3.3.tgz",
     dest: path.join(nm, "@tailwindcss", "oxide-linux-arm64-gnu"),
   },
+  {
+    tarball: "libsql-linux-arm64-gnu-0.5.29.tgz",
+    dest: path.join(nm, "@libsql", "linux-arm64-gnu"),
+  },
+  {
+    tarball: "esbuild-linux-arm64-0.25.12.tgz",
+    dest: path.join(nm, "@esbuild", "linux-arm64"),
+  },
 ];
 
 for (const { tarball, dest } of bindings) {
