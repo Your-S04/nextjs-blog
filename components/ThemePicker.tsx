@@ -44,7 +44,7 @@ export default function ThemePicker() {
   const active = THEMES.find((t) => t.id === current) ?? THEMES[0];
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative z-[100]">
       <button
         type="button"
         aria-label="切换外观"
