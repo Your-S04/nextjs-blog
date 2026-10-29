@@ -9,7 +9,17 @@
   --border: #e5e7eb;         /* 边框、分隔线 */
   --surface: #f3f4f6;        /* 标签胶囊、行内代码底 */
   --surface-hover: #e5e7eb;  /* surface 的 hover 态 */
-  --accent: #2563eb;         /* 链接、导航激活 */
+  --accent: #171717;         /* 交互主色:单色主题 = 墨,链接、激活、胶囊 */
+  --accent-2: #171717;       /* 海报强调:选中文字、硬影、徽标 */
+  --accent-3: #9ca3af;       /* 海报次级文字、尖刺副本 */
+  --poster: #171717;         /* 海报底:亮色 = 墨 */
+  --poster-ink: #ffffff;     /* 海报底上的文字与尖刺 */
+  --shadow: #6b7280;         /* 硬影/尖刺副本/徽标:必须与色块有色差 */
+  --bar-move-shadow: var(--foreground); /* 文章条悬停移动阴影:单色 = 墨(与反色条体反差最大) */
+  --veil: #171717;           /* 转场纱幕:任何主题都是暗底,深夜不闪 */
+  --band: #ffffff;           /* tags 刊头纸带:亮色 = 白 */
+  --band-ink: #171717;       /* 纸带上的 TAGS. 墨色与竖切线 */
+  --danger: #dc2626;         /* 错误、危险 */
 }
 
 /* ===== 暗色:在 <html> 上加 .dark 整体切换 ===== */
@@ -21,32 +31,17 @@
   --border: #1f2937;
   --surface: #1f2937;
   --surface-hover: #374151;
-  --accent: #3b82f6;
-}
-
-/* ===== 墨纸:暖色护眼(柔和低饱和,层级对比充足)=====
-   类名用 t- 前缀:主题类名不能和 Tailwind 工具类同名 */
-.t-sepia {
-  --background: #f5efe3;
-  --foreground: #3f3629;
-  --muted: #6f6350;
-  --faint: #8f8168;
-  --border: #e2d7c1;
-  --surface: #e7dabb;
-  --surface-hover: #d9c795;
-  --accent: #8f6218;
-}
-
-/* ===== 深海:冷蓝夜色 ===== */
-.ocean {
-  --background: #0f1b2d;
-  --foreground: #dbe7f5;
-  --muted: #8fa8c4;
-  --faint: #5d7590;
-  --border: #1e3350;
-  --surface: #1a2c47;
-  --surface-hover: #24395c;
-  --accent: #38bdf8;
+  --accent: #e5e7eb;
+  --accent-2: #e5e7eb;
+  --accent-3: #6b7280;
+  --poster: #1f2937;         /* 海报底:暗色 = 深灰画布,深夜不刺眼 */
+  --poster-ink: #e5e7eb;     /* 海报底上的文字与尖刺:暗色 = 浅色 */
+  --shadow: #6b7280;
+  --bar-move-shadow: var(--foreground);
+  --veil: #0b0f19;
+  --band: #171717;           /* 刊头纸带:暗色 = 墨带 */
+  --band-ink: #e5e7eb;       /* 墨带上的 TAGS. 与竖切线:浅色 */
+  --danger: #f87171;
 }
 
 /* ===== P3:女神异闻录3 的克莱因蓝 + 青 ===== */
@@ -59,14 +54,19 @@
   --surface: #10368a;
   --surface-hover: #1848ab;
   --accent: #00c8f0;
+  --accent-2: #e60012;
+  --accent-3: #9bd9f7;
+  --poster: #1b2fd8;
+  --poster-ink: #ffffff;
+  --shadow: #e60012;
+  --bar-move-shadow: var(--shadow); /* P3 移动阴影 = 血红,保持原貌 */
+  --veil: #1b2fd8;
+  --band: #ffffff;
+  --band-ink: #1b2fd8;       /* P3 纸带上的克莱因蓝大字 */
+  --danger: #ff5252;
 }
 
-/* ===== 未来更多主题:再加一个选择器块即可,如 =====
-.sepia {
-  --background: #f4ecd8;
-  ...
-}
-================================================= */
+/* ===== 未来更多主题:再加一个选择器块即可(类名避开 Tailwind 工具类) ===== */
 
 /* 标题品牌字体:英文走 Space Grotesk,中文回退文泉驿 */
 @theme {
@@ -83,14 +83,19 @@
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
+  --color-poster: var(--poster);
+  --color-poster-ink: var(--poster-ink);
+  --color-danger: var(--danger);
 }
 
 /* 允许个别场景使用 dark: 变体 */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   P3 实验:tag 页朋克海报样式(独立飞地,不影响全局 token)
-   色彩:克莱因蓝 #1B2FD8 / 朱红 #E60012 / 青 #00C8F0 / 黑白
+   全站海报语言:斜切块 / 硬影 / 出血字 / 纱幕转场
+   海报色统一走语义 token:poster / accent-2 / accent-3
    ============================================================ */
 /* 入场动画:仅在 "p3-arriving"(纱幕揭示期)期间赋给条目 ——
    基础态永远可见,iOS 上动画未启动的最坏情况也只是延迟出现,不会隐身;
@@ -123,18 +128,62 @@
   color: var(--idle-c);
   opacity: var(--idle-o);
 }
+/* 单色主题(亮/暗):静置与悬停文字纯白 + difference 反色 ——
+   落在纸区显墨、海报区显纸;悬停时墨色尖刺(前景色)垫到文字下面,
+   文字压在块上任意部分(尖刺或阴影)都反出同一个浅色;
+   条目父级不再携带 transform(避免隔离混合),rotate/skew 由各层自理。
+   :root:not(.p3) 排除 P3(维持红字白刺的原貌)。 */
+:root:not(.p3) .p3-idle-text {
+  color: #ffffff;
+  mix-blend-mode: difference;
+  opacity: 1;
+}
+:root:not(.p3) .group:hover .p3-idle-text {
+  opacity: 1;
+}
+:root:not(.p3) .p3-touch-on .p3-idle-text {
+  opacity: 1;
+}
+:root:not(.p3) .p3-tri-white {
+  background: var(--foreground);
+}
+/* 错位副本 = 硬影灰:与墨色色块有色差,块影分明 */
+:root:not(.p3) .p3-tri-shadow {
+  background: var(--shadow);
+}
+:root:not(.p3) .p3-hover-red {
+  display: none;
+}
+.p3-hover-red {
+  clip-path: var(--hover-clip, none);
+}
+:root:not(.p3) .p3-hover-red {
+  --hover-clip: var(--uc);
+  color: var(--background);
+}
+/* 单色主题:文章条悬停整条反色(纸底墨字),配合墨色移动阴影 */
+:root:not(.p3) .group:hover .p3-bar-block {
+  background: var(--background);
+  color: var(--foreground);
+}
 @media (hover: hover) {
   .group:hover .p3-idle-text {
     opacity: 0;
   }
   .group:hover .p3-tri-shadow,
   .group:hover .p3-tri-white,
-  .group:hover .p3-hover-black,
   .group:hover .p3-hover-red {
     opacity: 1;
   }
 }
-/* 白色斜切三角形(hover):红色硬影 = 同形复制 + 固定位移,全站方向一致 */
+/* 尖刺本体与错位副本的填充色(单色主题由 :not(.p3) 规则改写为前景色) */
+.p3-tri-white {
+  background: var(--poster-ink);
+}
+.p3-tri-shadow {
+  background: var(--shadow);
+}
+/* 选中尖刺(hover 弹出):同形副本 = 固定位移,全站方向一致 */
 .p3-tri {
   position: absolute;
   opacity: 0;
@@ -190,12 +239,11 @@
 }
 .p3-touch-on .p3-tri-shadow,
 .p3-touch-on .p3-tri-white,
-.p3-touch-on .p3-hover-black,
 .p3-touch-on .p3-hover-red {
   opacity: 1 !important;
 }
 
-/* ===== 桌面/移动分流:桌面实验构图,移动端(≤767px)单列简化 ===== */
+/* ===== 桌面/移动分流:桌面斜切分割构图,移动端(≤767px)整页海报底 ===== */
 .p3-split-blue {
   clip-path: polygon(38% 100%, 52% 0, 100% 0, 100% 100%);
 }
@@ -206,9 +254,6 @@
 .p3-col-item:first-child {
   margin-top: 0;
 }
-.p3-bar {
-  transform: rotate(var(--rot, 0deg)) skewX(var(--skw, 0deg));
-}
 
 /* ===== 页面转场纱幕:蓝底波点圆,右扩→左收(data-phase 驱动) ===== */
 .p3-veil {
@@ -216,7 +261,7 @@
   inset: 0;
   z-index: 70;
   pointer-events: none;
-  background-color: #1b2fd8;
+  background-color: var(--veil);
   background-image: radial-gradient(
     rgba(255, 255, 255, 0.28) 1.5px,
     transparent 1.6px

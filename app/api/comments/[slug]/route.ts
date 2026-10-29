@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@libsql/client/web";
+import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 
-const client = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-});
 
 type Ctx = { params: Promise<{ slug: string }> };
 
 /* 评论列表:联 users 取用户名,时间倒序 */
 export async function GET(_req: Request, { params }: Ctx) {
   const { slug } = await params;
-  const r = await client.execute({
+  const r = await db().execute({
     sql: `SELECT c.id, c.content, c.created_at, u.username
           FROM comments c JOIN users u ON u.id = c.user_id
           WHERE c.post_slug = ?
@@ -48,7 +44,7 @@ export async function POST(req: Request, { params }: Ctx) {
   }
 
   /* 简易限流:同一用户 30 秒内只允许发一条 */
-  const recent = await client.execute({
+  const recent = await db().execute({
     sql: `SELECT id FROM comments
           WHERE user_id = ? AND created_at > datetime('now', '-30 seconds')`,
     args: [user.id],
@@ -60,7 +56,7 @@ export async function POST(req: Request, { params }: Ctx) {
     );
   }
 
-  const r = await client.execute({
+  const r = await db().execute({
     sql: "INSERT INTO comments (post_slug, user_id, content) VALUES (?, ?, ?)",
     args: [slug, user.id, content],
   });

@@ -62,13 +62,13 @@ export default function LikeButton({ slug }: { slug: string }) {
       <button
         type="button"
         onClick={toggle}
-        className={`rounded-md px-3 py-1.5 text-sm font-bold transition-colors ${
+        className={`-skew-x-6 px-3 py-1.5 text-sm font-bold transition-colors ${
           liked
-            ? "bg-[#E60012] text-white"
-            : "bg-foreground text-background hover:bg-accent hover:text-black"
+            ? "bg-accent text-background"
+            : "bg-foreground text-background hover:bg-accent"
         }`}
       >
-        ♥ {count ?? 0}
+        <span className="inline-block skew-x-6">♥ {count ?? 0}</span>
       </button>
       {needLogin && (
         <span className="text-xs text-faint">

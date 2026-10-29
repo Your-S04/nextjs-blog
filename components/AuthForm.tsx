@@ -38,12 +38,12 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   };
 
   const input =
-    "w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none transition-colors focus:border-accent";
+    "w-full border-2 border-border bg-background px-3 py-2 text-sm outline-none transition-colors focus:border-accent";
 
   return (
-    <form onSubmit={submit} className="mx-auto mt-16 flex w-full max-w-sm flex-col gap-3">
-      <h1 className="font-brand text-2xl font-bold italic">
-        {mode === "login" ? "登录" : "注册"}
+    <form onSubmit={submit} className="mx-auto flex w-full flex-col gap-3 p-5">
+      <h1 className="w-fit -skew-x-6 bg-foreground px-3 py-1 font-brand text-2xl font-bold italic text-background shadow-[3px_3px_0_0_var(--shadow)]">
+        <span className="inline-block skew-x-6">{mode === "login" ? "Login" : "Register"}<span className="text-background">.</span></span>
       </h1>
       <input
         value={username}
@@ -65,11 +65,11 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
         required
         className={input}
       />
-      {error && <p className="text-sm text-[#E60012]">{error}</p>}
+      {error && <p className="text-sm font-semibold text-danger">{error}</p>}
       <button
         type="submit"
         disabled={busy}
-        className="rounded-md bg-foreground px-4 py-2 font-bold text-background transition-colors hover:bg-accent hover:text-black disabled:opacity-50"
+        className="-skew-x-6 bg-foreground px-4 py-2 font-bold text-background transition-colors hover:bg-accent hover:text-background disabled:opacity-50"
       >
         {busy ? "请稍候…" : mode === "login" ? "登录" : "注册"}
       </button>

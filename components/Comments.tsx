@@ -60,11 +60,13 @@ export default function Comments({ slug }: { slug: string }) {
   };
 
   const input =
-    "w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none transition-colors focus:border-accent";
+    "w-full border-2 border-border bg-background px-3 py-2 text-sm outline-none transition-colors focus:border-accent";
 
   return (
     <section id="comments" className="mt-10 border-t border-border pt-6">
-      <h2 className="mb-4 text-lg font-semibold">评论</h2>
+      <h2 className="mb-4 w-fit -skew-x-6 bg-foreground px-3 py-0.5 text-lg font-bold font-brand italic text-background">
+        <span className="inline-block skew-x-6">Comments<span className="text-background">.</span></span>
+      </h2>
 
       {username ? (
         <form onSubmit={submit} className="mb-6 flex flex-col gap-2">
@@ -77,15 +79,15 @@ export default function Comments({ slug }: { slug: string }) {
             required
             className={input}
           />
-          {error && <p className="text-sm text-[#E60012]">{error}</p>}
+          {error && <p className="text-sm font-semibold text-danger">{error}</p>}
           <div className="flex items-center justify-between">
             <span className="text-xs text-faint">{content.length}/500</span>
             <button
               type="submit"
               disabled={busy || content.trim().length === 0}
-              className="rounded-md bg-foreground px-4 py-1.5 text-sm font-bold text-background transition-colors hover:bg-accent hover:text-black disabled:opacity-50"
+              className="-skew-x-6 bg-foreground px-4 py-1.5 text-sm font-bold text-background transition-colors hover:bg-accent disabled:opacity-50"
             >
-              {busy ? "发送中…" : "发表评论"}
+              <span className="inline-block skew-x-6">{busy ? "发送中…" : "发表评论"}</span>
             </button>
           </div>
         </form>

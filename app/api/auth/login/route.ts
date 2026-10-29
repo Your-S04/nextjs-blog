@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@libsql/client/web";
+import { db } from "@/lib/db";
 import { verifyPassword, createSession } from "@/lib/auth";
 
-const client = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-});
 
 /* 登录:用户名 + 密码 → 会话 Cookie */
 export async function POST(req: Request) {
@@ -17,7 +13,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "缺少用户名或密码" }, { status: 400 });
   }
 
-  const r = await client.execute({
+  const r = await db().execute({
     sql: "SELECT id, password_hash FROM users WHERE username = ?",
     args: [username],
   });

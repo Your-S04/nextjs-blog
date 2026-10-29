@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@libsql/client/web";
+import { db } from "@/lib/db";
 
 /* 访客计数:存 Turso 云库(阶段 1 迁移)。
    环境变量来自 .env.local(本地)/ Vercel 环境变量(线上)。
    去重:visit_ips 表记录 (ip, day) —— 同一 IP 每天只计一次。 */
-const client = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-});
 
 export async function GET(request: Request) {
   const today = new Date().toISOString().slice(0, 10);
@@ -24,7 +20,7 @@ export async function GET(request: Request) {
 
   try {
     /* 首次见到的 IP 才计数:INSERT OR IGNORE 的 rowsAffected 区分新旧访客 */
-    const inserted = await client.execute({
+    const inserted = await db().execute({
       sql: `INSERT INTO visit_ips (ip, day) VALUES (?, ?)
             ON CONFLICT DO NOTHING`,
       args: [ip, today],
@@ -32,17 +28,17 @@ export async function GET(request: Request) {
     const isNew = (inserted.rowsAffected ?? 0) > 0;
 
     if (isNew) {
-      await client.execute({
+      await db().execute({
         sql: `INSERT INTO visits (day, count) VALUES (?, 1)
               ON CONFLICT(day) DO UPDATE SET count = count + 1`,
         args: [today],
       });
     }
 
-    const totalR = await client.execute(
+    const totalR = await db().execute(
       "SELECT COALESCE(SUM(count), 0) AS total FROM visits",
     );
-    const todayR = await client.execute({
+    const todayR = await db().execute({
       sql: "SELECT count FROM visits WHERE day = ?",
       args: [today],
     });

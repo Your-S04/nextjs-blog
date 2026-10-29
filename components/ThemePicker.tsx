@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { applyTheme, getStoredTheme, THEMES, type ThemeId } from "@/lib/theme";
 
 export default function ThemePicker() {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<ThemeId>("system");
   const [mounted, setMounted] = useState(false);
@@ -14,8 +12,9 @@ export default function ThemePicker() {
   useEffect(() => {
     const id = getStoredTheme();
     setCurrent(id);
-    // 默认跟随系统:首访(未手动选过)也挂上实时监听
-    if (id === "system") applyTheme("system");
+    // 水合后重放主题:React 19 水合会重置 <html> 属性,
+    // 仅靠 head 里的 bootstrap 脚本扛不住,必须在挂载后再落一次类
+    applyTheme(id);
     setMounted(true);
   }, []);
 
@@ -40,11 +39,9 @@ export default function ThemePicker() {
     applyTheme(id);
     setCurrent(id);
     setOpen(false);
-    /* 选 P3 主题 → 直达 P3 风格的 tag 页 */
-    if (id === "p3") router.push("/tags");
   };
 
-  const active = THEMES.find((t) => t.id === current) ?? THEMES[4];
+  const active = THEMES.find((t) => t.id === current) ?? THEMES[0];
 
   return (
     <div ref={rootRef} className="relative">

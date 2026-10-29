@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import P3PostBar from "@/components/P3PostBar";
@@ -57,9 +56,9 @@ export default async function TagPage({ params }: Props) {
         #{wanted.join("+")}
       </span>
 
-      <h1 className="relative z-10 mb-6 ml-1.5 w-fit -skew-x-6 bg-[#1B2FD8] px-4 py-1.5 font-brand text-2xl font-bold italic text-white p3-in">
+      <h1 className="relative z-10 mb-6 ml-1.5 w-fit -skew-x-6 bg-poster px-4 py-1.5 font-brand text-2xl font-bold italic text-poster-ink p3-in">
         <span className="inline-block skew-x-6">#{wanted.join("+")}</span>
-        <span className="ml-3 inline-block -skew-x-6 bg-[#E60012] px-2 py-0.5 text-xs font-bold">
+        <span className="ml-3 inline-block -skew-x-6 bg-[var(--shadow)] px-2 py-0.5 text-xs font-bold">
           <span className="inline-block skew-x-6">{posts.length} POSTS</span>
         </span>
       </h1>
@@ -69,15 +68,19 @@ export default async function TagPage({ params }: Props) {
         <div className="relative ml-1.5 mt-4 flex flex-wrap items-center gap-2">
           {wanted.length > 1 &&
             wanted.map((t) => (
-              <Link
+              <P3TransitionLink
                 key={t}
                 href={comboHref(wanted.filter((x) => x !== t))}
-                className="-skew-x-6 bg-foreground px-2.5 py-1 text-xs font-bold text-background transition-colors hover:bg-[#E60012] hover:text-white"
+                className="group relative -skew-x-6 bg-foreground px-2.5 py-1 text-xs font-bold text-background transition-colors duration-150 hover:bg-background hover:text-foreground"
               >
+                <span
+                  aria-hidden
+                  className="absolute inset-0 -z-10 skew-x-6 translate-x-[3px] translate-y-[3px] bg-[var(--shadow)] opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                />
                 <span className="inline-block skew-x-6">
                   {t} <span aria-hidden>✕</span>
                 </span>
-              </Link>
+              </P3TransitionLink>
             ))}
           {wanted.length > 1 && related.length > 0 && (
             <span aria-hidden className="px-1 text-xs font-bold text-faint">
@@ -85,13 +88,17 @@ export default async function TagPage({ params }: Props) {
             </span>
           )}
           {related.map((t) => (
-            <Link
+            <P3TransitionLink
               key={t}
               href={comboHref([...wanted, t])}
-              className="-skew-x-6 bg-[#00C8F0] px-2.5 py-1 text-xs font-bold text-black transition-colors hover:bg-[#E60012] hover:text-white"
+              className="group relative -skew-x-6 bg-accent px-2.5 py-1 text-xs font-bold text-background transition-colors duration-150 hover:bg-background hover:text-foreground"
             >
+              <span
+                aria-hidden
+                className="absolute inset-0 -z-10 skew-x-6 translate-x-[3px] translate-y-[3px] bg-[var(--shadow)] opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+              />
               <span className="inline-block skew-x-6">+ {t}</span>
-            </Link>
+            </P3TransitionLink>
           ))}
         </div>
       )}
@@ -104,13 +111,16 @@ export default async function TagPage({ params }: Props) {
         ))}
       </ul>
 
-      {/* 手柄提示位致敬 */}
-      <div className="relative mt-10 flex justify-end">
+      <div className="relative mt-10 flex justify-center">
         <P3TransitionLink
           href="/tags"
-          className="rounded-full bg-background px-3 py-1 text-xs font-bold text-foreground shadow-[0_0_0_2px_var(--border)] transition-colors hover:text-accent"
+          className="group relative inline-block -skew-x-6 bg-accent px-3 py-1 text-xs font-bold text-background transition-colors duration-150 hover:bg-background hover:text-foreground"
         >
-          全部标签
+          <span
+            aria-hidden
+            className="absolute inset-0 -z-10 skew-x-6 translate-x-[3px] translate-y-[3px] bg-[var(--shadow)] opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+          />
+          <span className="inline-block skew-x-6">ALL →</span>
         </P3TransitionLink>
       </div>
     </div>

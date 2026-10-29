@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@libsql/client/web";
+import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 
-const client = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-});
 
 type Ctx = { params: Promise<{ slug: string }> };
 
@@ -14,7 +10,7 @@ export async function GET(_req: Request, { params }: Ctx) {
   const { slug } = await params;
   const user = await getSessionUser();
 
-  const countR = await client.execute({
+  const countR = await db().execute({
     sql: "SELECT COUNT(*) AS n FROM likes WHERE post_slug = ?",
     args: [slug],
   });
@@ -22,7 +18,7 @@ export async function GET(_req: Request, { params }: Ctx) {
 
   let liked = false;
   if (user) {
-    const mine = await client.execute({
+    const mine = await db().execute({
       sql: "SELECT 1 FROM likes WHERE post_slug = ? AND user_id = ?",
       args: [slug, user.id],
     });
@@ -43,20 +39,20 @@ export async function POST(_req: Request, { params }: Ctx) {
   }
   const { slug } = await params;
 
-  const del = await client.execute({
+  const del = await db().execute({
     sql: "DELETE FROM likes WHERE post_slug = ? AND user_id = ?",
     args: [slug, user.id],
   });
   const cancelled = (del.rowsAffected ?? 0) > 0;
 
   if (!cancelled) {
-    await client.execute({
+    await db().execute({
       sql: "INSERT INTO likes (post_slug, user_id) VALUES (?, ?)",
       args: [slug, user.id],
     });
   }
 
-  const countR = await client.execute({
+  const countR = await db().execute({
     sql: "SELECT COUNT(*) AS n FROM likes WHERE post_slug = ?",
     args: [slug],
   });

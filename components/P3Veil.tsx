@@ -7,7 +7,7 @@ type Phase = "idle" | "cover" | "covered" | "reveal";
 
 const COVER_MS = 380;
 
-/* 转场纱幕(挂在本区共享 layout,实例跨页面存活),三阶段状态机:
+/* 转场纱幕(挂在根 layout,实例跨页面存活),三阶段状态机:
    1. cover   圆从右缘扩张吞屏(0.38s)
    2. covered 满屏后锚点瞬间换到左缘(切换不可见)
    3. reveal  从左缘收合,揭示新页(0.45s)

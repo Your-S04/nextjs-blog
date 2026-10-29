@@ -1,14 +1,9 @@
 import { cookies, headers } from "next/headers";
-import { createClient } from "@libsql/client/web";
 import bcrypt from "bcryptjs";
+import { db } from "@/lib/db";
 
 /* 认证核心:密码哈希(bcryptjs)+ 会话令牌(sessions 表 + httpOnly Cookie)。
-   仅服务端使用(route handlers 里)。 */
-
-const client = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-});
+   仅服务端使用(route handlers 里)。数据库客户端见 lib/db.ts(惰性初始化)。 */
 
 export const SESSION_COOKIE = "p3_session";
 const SESSION_DAYS = 30;
@@ -29,7 +24,7 @@ export async function verifyPassword(pw: string, hash: string): Promise<boolean>
 export async function createSession(userId: number): Promise<void> {
   const token = crypto.randomUUID() + crypto.randomUUID();
   const expires = new Date(Date.now() + SESSION_DAYS * 86400_000).toISOString();
-  await client.execute({
+  await db().execute({
     sql: "INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)",
     args: [token, userId, expires],
   });
@@ -50,7 +45,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
   if (!token) return null;
-  const r = await client.execute({
+  const r = await db().execute({
     sql: `SELECT u.id, u.username FROM sessions s
           JOIN users u ON u.id = s.user_id
           WHERE s.token = ? AND s.expires_at > datetime('now')`,
@@ -66,7 +61,7 @@ export async function destroySession(): Promise<void> {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
   if (token) {
-    await client.execute({
+    await db().execute({
       sql: "DELETE FROM sessions WHERE token = ?",
       args: [token],
     });

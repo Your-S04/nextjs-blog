@@ -3,24 +3,22 @@
  * 无 React 依赖;ThemePicker 组件和 layout 的内联脚本都消费这里。
  */
 
-export type ThemeId = "light" | "dark" | "t-sepia" | "ocean" | "p3" | "system";
+export type ThemeId = "light" | "dark" | "p3" | "system";
 /** 不需要挂类的主题(light 是 :root 默认)
  *  命名避坑:主题类名不能和 Tailwind 工具类同名(滤镜类就是一个先例) */
-const THEME_CLASSES = ["dark", "t-sepia", "ocean", "p3"] as const;
+const THEME_CLASSES = ["dark", "p3"] as const;
 const STORAGE_KEY = "kiyone-theme";
 
-/** 主题清单:swatch 三色用于选择器的色块(背景/表面/强调) */
+/** 主题清单:swatch 三色用于选择器的色块(背景/海报/强调) */
 export const THEMES: {
   id: ThemeId;
   label: string;
   swatch: [string, string, string];
 }[] = [
-  { id: "light", label: "亮色", swatch: ["#ffffff", "#f3f4f6", "#2563eb"] },
-  { id: "dark", label: "暗色", swatch: ["#0b0f19", "#1f2937", "#3b82f6"] },
-  { id: "t-sepia", label: "墨纸", swatch: ["#f5efe3", "#ece3cf", "#8f6218"] },
-  { id: "ocean", label: "深海", swatch: ["#0f1b2d", "#1a2c47", "#38bdf8"] },
-  { id: "p3", label: "P3", swatch: ["#0a2a70", "#10368a", "#00c8f0"] },
-  { id: "system", label: "跟随系统", swatch: ["#ffffff", "#0b0f19", "#2563eb"] },
+  { id: "light", label: "亮色", swatch: ["#ffffff", "#171717", "#171717"] },
+  { id: "dark", label: "暗色", swatch: ["#0b0f19", "#1f2937", "#e5e7eb"] },
+  { id: "p3", label: "P3", swatch: ["#0a2a70", "#1b2fd8", "#00c8f0"] },
+  { id: "system", label: "跟随系统", swatch: ["#ffffff", "#0b0f19", "#171717"] },
 ];
 
 export function isThemeId(v: unknown): v is ThemeId {
@@ -69,5 +67,6 @@ function watchSystem(current: ThemeId): void {
 }
 
 /** 防白闪内联脚本:React 渲染前在 <head> 里执行,设置初始主题类。
- *  逻辑必须与 applyTheme/resolveTheme 保持一致,改这里时同步改上面。 */
-export const BOOTSTRAP_SCRIPT = `(function(){try{var t=localStorage.getItem("${STORAGE_KEY}");var ok=["light","dark","t-sepia","ocean","p3","system"];if(!t||ok.indexOf(t)===-1){t="system"}if(t==="system"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(t!=="light"){document.documentElement.classList.add(t)}}catch(e){}})();`;
+ *  逻辑必须与 applyTheme/resolveTheme 保持一致,改这里时同步改上面。
+ *  历史残留的主题值(t-sepia/ocean)会回退到 system。 */
+export const BOOTSTRAP_SCRIPT = `(function(){try{var t=localStorage.getItem("${STORAGE_KEY}");var ok=["light","dark","p3","system"];if(!t||ok.indexOf(t)===-1){t="system"}if(t==="system"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(t!=="light"){document.documentElement.classList.add(t)}}catch(e){})();`;

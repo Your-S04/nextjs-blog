@@ -1,36 +1,36 @@
 "use client";
 
 import Link from "next/link";
+import { forwardRef } from "react";
 import { useRouter } from "next/navigation";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, ReactNode, Ref } from "react";
 
 const COVER_MS = 380;
 
-/* P3 转场链接:点击 → 派发 "p3:transition-start"(纱幕开始覆盖)
-   → 覆盖完成后才 router.push(全屏已遮,跳转无闪帧)
-   → 新页就绪后由 P3Veil 揭示。 */
-export default function P3TransitionLink({
-  href,
-  className,
-  style,
-  children,
-}: {
+type Props = {
   href: string;
   className?: string;
   style?: CSSProperties;
   children: ReactNode;
-}) {
+  ref?: Ref<HTMLAnchorElement>;
+  onMouseMove?: React.MouseEventHandler<HTMLAnchorElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLAnchorElement>;
+};
+
+/* 统一站内导航:先用纱幕盖住当前页,再切路由,避免页面闪帧。
+   reduced-motion / 修饰键点击(新标签页)退回普通 <Link> 行为。 */
+const P3TransitionLink = forwardRef<HTMLAnchorElement, Props>(function P3TransitionLink(
+  { href, className, style, children, onMouseMove, onMouseLeave },
+  ref,
+) {
   const router = useRouter();
 
   const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    /* reduced-motion:退回普通导航 */
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const self = e.currentTarget;
-    const touch = window.matchMedia("(hover: none)").matches;
-
-    /* 触屏:点按瞬间强制 hover 视觉态(与覆盖动画同时可见) */
-    if (touch && self.querySelector(".p3-idle-text")) {
+    if (window.matchMedia("(hover: none)").matches && self.querySelector(".p3-idle-text")) {
       self.classList.add("p3-touch-on");
     }
 
@@ -40,8 +40,18 @@ export default function P3TransitionLink({
   };
 
   return (
-    <Link href={href} className={className} style={style} onClick={onClick}>
+    <Link
+      ref={ref}
+      href={href}
+      className={className}
+      style={style}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      onClick={onClick}
+    >
       {children}
     </Link>
   );
-}
+});
+
+export default P3TransitionLink;

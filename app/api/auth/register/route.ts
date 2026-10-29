@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@libsql/client/web";
+import { db } from "@/lib/db";
 import { hashPassword, createSession } from "@/lib/auth";
 
-const client = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-});
 
 /* 注册:用户名 2-16 位(字母/数字/下划线/中文),密码 6-72 位 */
 export async function POST(req: Request) {
@@ -26,7 +22,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "密码需 6-72 位" }, { status: 400 });
   }
 
-  const dup = await client.execute({
+  const dup = await db().execute({
     sql: "SELECT id FROM users WHERE username = ?",
     args: [username],
   });
@@ -35,7 +31,7 @@ export async function POST(req: Request) {
   }
 
   const hash = await hashPassword(password);
-  const r = await client.execute({
+  const r = await db().execute({
     sql: "INSERT INTO users (username, password_hash) VALUES (?, ?)",
     args: [username, hash],
   });

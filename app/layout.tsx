@@ -3,6 +3,7 @@ import "@fontsource-variable/space-grotesk";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import P3Veil from "@/components/P3Veil";
 import { BOOTSTRAP_SCRIPT } from "@/lib/theme";
 
 export const metadata: Metadata = {
@@ -21,6 +22,8 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
         <Header />
         <main  className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">{children}</main>
         <Footer />
+        {/* 全站转场纱幕:根 layout 跨页存活,实例不卸载、不重挂 */}
+        <P3Veil />
       </body>
     </html>
   );
