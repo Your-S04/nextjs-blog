@@ -1,12 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
-import Lightbox, { type LightboxPhoto } from "@/components/Lightbox";
+import Lightbox from "@/components/Lightbox";
+import type { GalleryGroup } from "@/lib/gallery";
 
 /* 摄影图集区块:CSS 多列瀑布流(缩略图保持原始比例),
-   点击任意图打开全组灯箱,左右键跨组连看。 */
+   点击任意图打开全组灯箱,左右键跨组连看。
+   缩略图走 next/image:按设备下发小尺寸 WebP,原图流量只在灯箱花。 */
 
-type Group = { name: string; photos: LightboxPhoto[] };
+type Group = GalleryGroup;
 
 export default function GalleryGrid({ groups }: { groups: Group[] }) {
   const [index, setIndex] = useState<number | null>(null);
@@ -36,8 +39,17 @@ export default function GalleryGrid({ groups }: { groups: Group[] }) {
                 aria-label={`查看 ${p.caption}`}
                 className="mb-3 block w-full cursor-zoom-in break-inside-avoid border-2 border-foreground bg-surface shadow-[4px_4px_0_0_var(--shadow)] transition-transform duration-150 hover:-translate-y-0.5"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element -- 瀑布流依赖图片自然高度,next/image 需要预知尺寸 */}
-                <img src={p.src} alt={p.caption} loading="lazy" className="block w-full" />
+                {/* SVG 是矢量不需要优化,直接原样加载;位图走优化管线 */}
+                <Image
+                  src={p.src}
+                  alt={p.caption}
+                  width={p.width}
+                  height={p.height}
+                  sizes="(max-width: 768px) 50vw, 320px"
+                  loading="lazy"
+                  unoptimized={p.src.endsWith(".svg")}
+                  className="block h-auto w-full"
+                />
               </button>
             ))}
           </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Lightbox from "@/components/Lightbox";
 import type { Memory } from "@/lib/memories";
@@ -54,11 +55,15 @@ export default function MemoriesTimeline({ entries }: { entries: Memory[] }) {
                     aria-label={`查看 ${img.caption}`}
                     className="cursor-zoom-in border-2 border-foreground shadow-[4px_4px_0_0_var(--shadow)] transition-transform duration-150 hover:-translate-y-0.5"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element -- 缩略图按原始比例缩放,next/image 需要预知尺寸 */}
-                    <img
+                    {/* 缩略图固定高 7rem,next/image 按需下发小尺寸 */}
+                    <Image
                       src={img.src}
                       alt={img.caption}
+                      width={img.width}
+                      height={img.height}
+                      sizes="160px"
                       loading="lazy"
+                      unoptimized={img.src.endsWith(".svg")}
                       className="block h-28 w-auto"
                     />
                   </button>

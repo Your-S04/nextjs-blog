@@ -1,12 +1,19 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect } from "react";
 
 /* 全屏灯箱:受控组件(开闭与索引由父级管理),两个图片区块共用。
    Esc 关闭、←/→ 切换(循环)、点背景关闭、背景滚动锁定;
-   背景固定暗底(与纱幕同理,任何主题下都不刺眼)。 */
+   背景固定暗底(与纱幕同理,任何主题下都不刺眼)。
+   大图走 next/image 按视口下发合适尺寸,另给"查看原图"直链原始文件。 */
 
-export type LightboxPhoto = { src: string; caption?: string };
+export type LightboxPhoto = {
+  src: string;
+  caption?: string;
+  width: number;
+  height: number;
+};
 
 type Props = {
   photos: LightboxPhoto[];
@@ -46,12 +53,17 @@ export default function Lightbox({ photos, index, onClose, onNavigate }: Props) 
       className="fixed inset-0 z-[80] flex flex-col items-center justify-center gap-3 p-4"
       style={{ background: "rgba(5, 8, 16, 0.9)" }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- 灯箱要按图片自然比例显示,next/image 需要预知尺寸 */}
-      <img
+      {/* SVG 是矢量不需要优化,直接原样加载;位图按视口下发合适的大图 */}
+      <Image
         src={photo.src}
         alt={photo.caption ?? ""}
+        width={photo.width}
+        height={photo.height}
+        sizes="(max-width: 768px) 100vw, 90vw"
+        priority
+        unoptimized={photo.src.endsWith(".svg")}
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[78vh] max-w-[92vw] select-none object-contain shadow-[6px_6px_0_0_rgba(0,0,0,0.6)]"
+        className="h-auto w-auto max-h-[74vh] max-w-[92vw] select-none object-contain shadow-[6px_6px_0_0_rgba(0,0,0,0.6)]"
       />
       {photo.caption && <p className="text-xs text-white/85">{photo.caption}</p>}
       {photos.length > 1 && (
@@ -59,6 +71,15 @@ export default function Lightbox({ photos, index, onClose, onNavigate }: Props) 
           {i + 1} / {photos.length}
         </p>
       )}
+      <a
+        href={photo.src}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        className="text-[10px] text-white/50 underline hover:text-white/90"
+      >
+        查看原图 ↗
+      </a>
 
       {photos.length > 1 && (
         <>

@@ -17,6 +17,7 @@
     "bcryptjs": "^3.0.3",
     "drizzle-kit": "^0.31.11",
     "drizzle-orm": "^0.45.4",
+    "image-size": "^2.0.4",
     "next": "^16.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
