@@ -22,6 +22,12 @@ export async function verifyPassword(pw: string, hash: string): Promise<boolean>
     secure 标志按请求协议自动判断 —— 本地 http 不启用(Safari 不接受
     localhost 上的 Secure Cookie),Vercel 代理(x-forwarded-proto=https)自动启用 */
 export async function createSession(userId: number): Promise<void> {
+  /* 顺手清理过期会话(登录不频繁,一次全局 DELETE 换表不膨胀)。
+     时间比较统一走 julianday:存量行是 toISOString 的 "T/Z" 格式,
+     datetime('now') 是空格格式,字符串直接比在到期日当天会失准 */
+  await db().execute(
+    "DELETE FROM sessions WHERE julianday(expires_at) <= julianday('now')",
+  );
   const token = crypto.randomUUID() + crypto.randomUUID();
   const expires = new Date(Date.now() + SESSION_DAYS * 86400_000).toISOString();
   await db().execute({
@@ -48,7 +54,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   const r = await db().execute({
     sql: `SELECT u.id, u.username FROM sessions s
           JOIN users u ON u.id = s.user_id
-          WHERE s.token = ? AND s.expires_at > datetime('now')`,
+          WHERE s.token = ? AND julianday(s.expires_at) > julianday('now')`,
     args: [token],
   });
   const row = r.rows[0];

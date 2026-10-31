@@ -10,6 +10,16 @@ type Comment = {
   createdAt: string;
 };
 
+/* 服务端统一存 UTC(SQLite datetime 的空格格式 / ISO 的 T 格式):
+   按 UTC 解析后转浏览器本地时区显示,否则北京时间会慢 8 小时 */
+function formatTime(utc: string): string {
+  const iso = utc.includes("T") ? utc : `${utc.replace(" ", "T")}Z`;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return utc; // 解析失败原样兜底
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 /* 评论区:列表 + 发表框(需登录);纯文本渲染,防 XSS */
 export default function Comments({ slug }: { slug: string }) {
   const [comments, setComments] = useState<Comment[] | null>(null);
@@ -108,9 +118,7 @@ export default function Comments({ slug }: { slug: string }) {
             <li key={c.id} className="border-b border-border pb-3">
               <div className="flex items-baseline justify-between gap-2">
                 <span className="text-sm font-bold">{c.username}</span>
-                <time className="text-xs text-faint">
-                  {c.createdAt.slice(0, 16).replace("T", " ")}
-                </time>
+                <time className="text-xs text-faint">{formatTime(c.createdAt)}</time>
               </div>
               <p className="mt-1 whitespace-pre-wrap text-sm">{c.content}</p>
             </li>

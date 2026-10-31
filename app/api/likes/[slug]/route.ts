@@ -46,8 +46,12 @@ export async function POST(_req: Request, { params }: Ctx) {
   const cancelled = (del.rowsAffected ?? 0) > 0;
 
   if (!cancelled) {
+    /* ON CONFLICT DO NOTHING:并发双击时两个请求都会走到这里,
+       UNIQUE(post_slug, user_id) 保证最终最多一赞 —— 晚到的 INSERT
+       被静默忽略,但行(对方插的)已存在,liked 返回 true 仍与事实一致 */
     await db().execute({
-      sql: "INSERT INTO likes (post_slug, user_id) VALUES (?, ?)",
+      sql: `INSERT INTO likes (post_slug, user_id) VALUES (?, ?)
+            ON CONFLICT DO NOTHING`,
       args: [slug, user.id],
     });
   }

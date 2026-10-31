@@ -31,11 +31,22 @@ export async function POST(req: Request) {
   }
 
   const hash = await hashPassword(password);
-  const r = await db().execute({
-    sql: "INSERT INTO users (username, password_hash) VALUES (?, ?)",
-    args: [username, hash],
-  });
-  const userId = Number(r.lastInsertRowid);
+
+  /* 上面的查重与这条 INSERT 之间有并发窗口:同名请求同时通过查重后,
+     第二个会撞 UNIQUE 约束 —— 捕获后返回与查重一致的 409 */
+  let userId: number;
+  try {
+    const r = await db().execute({
+      sql: "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+      args: [username, hash],
+    });
+    userId = Number(r.lastInsertRowid);
+  } catch (e) {
+    if ((e as { code?: string }).code?.startsWith("SQLITE_CONSTRAINT")) {
+      return NextResponse.json({ error: "用户名已被占用" }, { status: 409 });
+    }
+    throw e;
+  }
 
   await createSession(userId); // 注册即登录
   return NextResponse.json({ user: { id: userId, username } });
