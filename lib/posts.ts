@@ -3,7 +3,7 @@ import path from "path";
 
 const postsDir = path.join(process.cwd(), "content/posts");
 
-function parseFrontmatter(raw: string): {
+export function parseFrontmatter(raw: string): {
   data: Record<string, string | string[]>;
   content: string;
 } {

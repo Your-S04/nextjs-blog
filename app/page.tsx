@@ -71,6 +71,26 @@ export default function Home() {
         </section>
       )}
 
+      {/* ===== 记忆卡片:摄影图集 + 游戏记忆(结构完全对齐 About 卡片) ===== */}
+      <section id="memory" className="mt-10">
+        <h2 className="w-fit -skew-x-6 bg-foreground px-3 py-0.5 text-lg font-bold font-brand italic text-background">
+          <span className="inline-block skew-x-6">
+            Memory<span className="text-background">.</span>
+          </span>
+        </h2>
+        <div className="mt-4 -skew-x-2 border-2 border-foreground bg-surface p-4 shadow-[5px_5px_0_0_var(--shadow)]">
+          <div className="skew-x-2">
+            <p className="text-muted">摄影图集 · 与朋友的游戏记忆。</p>
+            <P3TransitionLink
+              href="/memory"
+              className="mt-2 inline-block text-sm font-semibold text-accent transition-colors hover:text-accent-2"
+            >
+              更多 →
+            </P3TransitionLink>
+          </div>
+        </div>
+      </section>
+
       {/* ===== 关于卡片 ===== */}
       <section id="about" className="mt-10">
         <h2 className="w-fit -skew-x-6 bg-foreground px-3 py-0.5 text-lg font-bold font-brand italic text-background">
