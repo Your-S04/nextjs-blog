@@ -1,4 +1,5 @@
 import P3TransitionLink from "@/components/P3TransitionLink";
+import AboutWidgets from "@/components/widgets/AboutWidgets";
 
 export default function About() {
   return (
@@ -21,6 +22,9 @@ export default function About() {
           <span className="inline-block skew-x-6">← 首页</span>
         </P3TransitionLink>
       </div>
+
+      {/* 漂浮组件组:COMMITS. / CONTACT. / S.LINK.(fixed 定位,不占版面) */}
+      <AboutWidgets />
     </div>
   );
 }

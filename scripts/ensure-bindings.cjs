@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS 脚本(.cjs)本来就用 require */
 /**
- * 跨平台依赖保活:本项目在 Termux(android)与 Debian 容器(linux)两套环境
- * 共享同一个 node_modules,但 npm 会按当前平台过滤 optionalDependencies,
+ * 跨平台依赖保活:本项目在 Termux(android)、Debian 容器与 Windows
+ * 多套环境共享同一个 node_modules,但 npm 会按当前平台过滤 optionalDependencies,
  * 把"不属于本平台"的手动安装目录当作多余文件清掉。
  *
  * vendor/ 里收录了 linux-arm64 的两个原生绑定 tarball(它们被 Termux 的

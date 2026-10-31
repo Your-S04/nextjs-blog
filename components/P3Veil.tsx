@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Phase = "idle" | "cover" | "covered" | "reveal";
 
@@ -21,16 +21,17 @@ export default function P3Veil() {
   const coverStartRef = useRef(0);
   const prevPathRef = useRef(pathname);
 
-  const set = (p: Phase) => {
+  /* useCallback 固定函数身份:下游两个 effect 的依赖数组才能稳定 */
+  const set = useCallback((p: Phase) => {
     phaseRef.current = p;
     setPhase(p);
-  };
+  }, []);
 
-  const toCovered = () => {
+  const toCovered = useCallback(() => {
     set("covered");
     /* 双 rAF 确保覆盖态先绘制,再切 reveal 过渡 */
     requestAnimationFrame(() => requestAnimationFrame(() => set("reveal")));
-  };
+  }, [set]);
 
   /* 转场请求(P3TransitionLink 派发) */
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function P3Veil() {
     };
     window.addEventListener("p3:transition-start", onStart);
     return () => window.removeEventListener("p3:transition-start", onStart);
-  }, []);
+  }, [set, toCovered]);
 
   /* 路径变化 = 新页面已渲染 → 等 cover 播完后,择机覆盖+揭示 */
   useEffect(() => {
@@ -62,7 +63,7 @@ export default function P3Veil() {
       Math.max(0, COVER_MS - elapsed),
     );
     return () => window.clearTimeout(t);
-  }, [pathname]);
+  }, [pathname, set, toCovered]);
 
   /* 揭示动画(0.45s)结束后归位;揭示期间给 <html> 挂 p3-arriving,
      驱动条目入场动画(错峰),结束(0.8s 后)摘除 → 基础态可见,永不隐身 */
@@ -74,7 +75,7 @@ export default function P3Veil() {
       set("idle");
     }, 800);
     return () => window.clearTimeout(t);
-  }, [phase]);
+  }, [phase, set]);
 
   return <div aria-hidden data-phase={phase} className="p3-veil" />;
 }

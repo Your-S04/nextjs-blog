@@ -8,15 +8,14 @@ import { useEffect, useState } from "react";
    未登录 → 登录/注册 链接;已登录 → 用户名 + 退出 */
 export default function AuthWidget() {
   const router = useRouter();
-  const [username, setUsername] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+  /* undefined = 登录态未确认(渲染占位,防水合不一致),null = 确认未登录 */
+  const [username, setUsername] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
       .then((d) => setUsername(d.user?.username ?? null))
       .catch(() => setUsername(null));
-    setMounted(true);
   }, []);
 
   const logout = async () => {
@@ -25,7 +24,7 @@ export default function AuthWidget() {
     router.refresh();
   };
 
-  if (!mounted) return <div className="h-5 w-16" />; // 占位防布局跳动
+  if (username === undefined) return <div className="h-5 w-16" />; // 占位防布局跳动
 
   if (username) {
     return (

@@ -5,17 +5,17 @@ import { applyTheme, getStoredTheme, THEMES, type ThemeId } from "@/lib/theme";
 
 export default function ThemePicker() {
   const [open, setOpen] = useState(false);
-  const [current, setCurrent] = useState<ThemeId>("system");
-  const [mounted, setMounted] = useState(false);
+  const [current, setCurrent] = useState<ThemeId | null>(null); // null = 水合前未知,渲染中性占位
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const id = getStoredTheme();
-    setCurrent(id);
     // 水合后重放主题:React 19 水合会重置 <html> 属性,
-    // 仅靠 head 里的 bootstrap 脚本扛不住,必须在挂载后再落一次类
+    // 仅靠 head 里的 bootstrap 脚本扛不住,必须在挂载后再落一次类;
+    // 多一次渲染是有意的初始化,非级联更新
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrent(id);
     applyTheme(id);
-    setMounted(true);
   }, []);
 
   // 点外面 / Esc 关闭
@@ -41,7 +41,7 @@ export default function ThemePicker() {
     setOpen(false);
   };
 
-  const active = THEMES.find((t) => t.id === current) ?? THEMES[0];
+  const active = current ? (THEMES.find((t) => t.id === current) ?? null) : null;
 
   return (
     <div ref={rootRef} className="relative z-[100]">
@@ -53,11 +53,11 @@ export default function ThemePicker() {
         onClick={() => setOpen((v) => !v)}
         className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface hover:bg-surface-hover"
       >
-        {/* 未挂载前用中性占位,避免水合不一致 */}
+        {/* 水合确认前用中性占位,避免水合不一致 */}
         <span
           className="h-4 w-4 rounded-full"
           style={
-            mounted
+            active
               ? {
                   background: `conic-gradient(${active.swatch[0]} 0 120deg, ${active.swatch[1]} 120deg 240deg, ${active.swatch[2]} 240deg 360deg)`,
                 }

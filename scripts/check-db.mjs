@@ -9,7 +9,7 @@ const client = createClient({
 const ping = await client.execute("SELECT 1 AS ok");
 console.log("✓ 连接成功:", JSON.stringify(ping.rows[0]));
 
-/* 2. 建表(阶段 0/2/3/4 的地基) */
+/* 2. 建表(全站功能的地基,六个表一次建齐) */
 await client.execute(`CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
