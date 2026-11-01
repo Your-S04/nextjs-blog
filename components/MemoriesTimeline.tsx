@@ -43,7 +43,7 @@ export default function MemoriesTimeline({ entries }: { entries: Memory[] }) {
                 </span>
               ))}
               {m.friends.length > 0 && (
-                <span className="text-xs text-faint">与 {m.friends.join("、")}</span>
+                <span className="text-xs text-faint">with {m.friends.join("、")}</span>
               )}
             </div>
 

@@ -379,3 +379,24 @@ body {
 .hljs-emphasis {
   font-style: italic;
 }
+
+/* ===== 原生视图过渡(主题切换 / 标签筛选) =====
+   旧快照与新快照交叉流变;Chromium 111+/Safari 18+ 生效,
+   不支持的浏览器由 JS 侧直接跳变,零降级成本。 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
+}
+/* 过渡期间放行指针事件,页面保持可点 */
+::view-transition {
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

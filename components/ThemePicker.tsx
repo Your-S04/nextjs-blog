@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { applyTheme, getStoredTheme, THEMES, type ThemeId } from "@/lib/theme";
+import { applyTheme, applyThemeWithTransition, getStoredTheme, THEMES, type ThemeId } from "@/lib/theme";
 
 export default function ThemePicker() {
   const [open, setOpen] = useState(false);
@@ -36,9 +36,9 @@ export default function ThemePicker() {
   }, [open]);
 
   const pick = (id: ThemeId) => {
-    applyTheme(id);
-    setCurrent(id);
     setOpen(false);
+    applyThemeWithTransition(id); // 整页颜色交叉流变(视图过渡)
+    setCurrent(id);
   };
 
   const active = current ? (THEMES.find((t) => t.id === current) ?? null) : null;

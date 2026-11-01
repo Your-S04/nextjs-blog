@@ -47,6 +47,20 @@ export function applyTheme(id: ThemeId): void {
   watchSystem(id);
 }
 
+/** 带原生视图过渡的应用主题:整页颜色交叉流变(Chrome/Edge/Safari 18+),
+    不支持的浏览器立即切换,零降级成本。 */
+export function applyThemeWithTransition(id: ThemeId): void {
+  type VTDocument = Document & {
+    startViewTransition?: (updateCallback: () => void) => unknown;
+  };
+  const d = document as VTDocument;
+  if (typeof d.startViewTransition === "function") {
+    d.startViewTransition(() => applyTheme(id));
+    return;
+  }
+  applyTheme(id);
+}
+
 export function getStoredTheme(): ThemeId {
   try {
     const v = localStorage.getItem(STORAGE_KEY);

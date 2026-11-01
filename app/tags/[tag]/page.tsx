@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import P3PostBar from "@/components/P3PostBar";
 import P3TransitionLink from "@/components/P3TransitionLink";
@@ -71,6 +72,7 @@ export default async function TagPage({ params }: Props) {
               <P3TransitionLink
                 key={t}
                 href={comboHref(wanted.filter((x) => x !== t))}
+                noVeil /* 同页筛选:跳过纱幕,交给原生视图过渡 */
                 className="group relative -skew-x-6 bg-foreground px-2.5 py-1 text-xs font-bold text-background transition-colors duration-150 hover:bg-background hover:text-foreground"
               >
                 <span
@@ -91,6 +93,7 @@ export default async function TagPage({ params }: Props) {
             <P3TransitionLink
               key={t}
               href={comboHref([...wanted, t])}
+              noVeil /* 同上 */
               className="group relative -skew-x-6 bg-accent px-2.5 py-1 text-xs font-bold text-background transition-colors duration-150 hover:bg-background hover:text-foreground"
             >
               <span
@@ -103,10 +106,13 @@ export default async function TagPage({ params }: Props) {
         </div>
       )}
 
+      {/* 同页筛选时:留下的条目原位保持,移除的淡出、新增的淡入(原生视图过渡) */}
       <ul className="relative mt-8 space-y-3 pb-2">
         {posts.map((p, i) => (
           <li key={p.slug} className="p3-in" style={{ animationDelay: `${Math.min(i * 70, 500)}ms` }}>
-            <P3PostBar href={`/posts/${p.slug}`} index={i} title={p.title} date={p.date} />
+            <ViewTransition name={`post-${p.slug}`} default="none" enter="auto" exit="auto">
+              <P3PostBar href={`/posts/${p.slug}`} index={i} title={p.title} date={p.date} />
+            </ViewTransition>
           </li>
         ))}
       </ul>

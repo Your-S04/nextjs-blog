@@ -15,12 +15,14 @@ type Props = {
   ref?: Ref<HTMLAnchorElement>;
   onMouseMove?: React.MouseEventHandler<HTMLAnchorElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLAnchorElement>;
+  /** 跳过纱幕直接切路由:交给原生视图过渡(如同页内容筛选) */
+  noVeil?: boolean;
 };
 
 /* 统一站内导航:先用纱幕盖住当前页,再切路由,避免页面闪帧。
    reduced-motion / 修饰键点击(新标签页)退回普通 <Link> 行为。 */
 const P3TransitionLink = forwardRef<HTMLAnchorElement, Props>(function P3TransitionLink(
-  { href, className, style, children, onMouseMove, onMouseLeave },
+  { href, className, style, children, onMouseMove, onMouseLeave, noVeil },
   ref,
 ) {
   const router = useRouter();
@@ -35,6 +37,10 @@ const P3TransitionLink = forwardRef<HTMLAnchorElement, Props>(function P3Transit
     }
 
     e.preventDefault();
+    if (noVeil) {
+      router.push(href); // 无纱幕:导航即 React transition,原生视图过渡接管
+      return;
+    }
     window.dispatchEvent(new CustomEvent("p3:transition-start"));
     window.setTimeout(() => router.push(href), COVER_MS);
   };
