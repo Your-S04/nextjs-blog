@@ -116,6 +116,27 @@ export default function Lightbox({ photos, index, onClose, onNavigate }: Props) 
       >
         ×
       </button>
+
+      {/* 邻图预取:以与主图完全相同的参数静默加载前后两张,翻页零等待 */}
+      {photos.length > 2 && (
+        <div aria-hidden className="pointer-events-none fixed left-0 top-0 h-0 w-0 overflow-hidden opacity-0">
+          {[i + 1, i - 1].map((n) => {
+            const p = photos[((n % photos.length) + photos.length) % photos.length];
+            return (
+              <Image
+                key={p.src}
+                src={p.src}
+                alt=""
+                width={p.width}
+                height={p.height}
+                sizes="(max-width: 768px) 100vw, 90vw"
+                priority
+                unoptimized={p.src.endsWith(".svg")}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

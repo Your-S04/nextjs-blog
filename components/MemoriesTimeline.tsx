@@ -3,14 +3,18 @@
 import Image from "next/image";
 import { useState } from "react";
 import Lightbox from "@/components/Lightbox";
+import ImageWarmer from "@/components/ImageWarmer";
 import type { Memory } from "@/lib/memories";
 
 /* 游戏记忆区块:竖向时间线 —— 左侧脊线 + 方块节点(P3 斜切语言),
-   每条 = 日期 + 游戏胶囊 + 同行朋友 + 几句话 + 截图(点开灯箱)。 */
+   每条 = 日期 + 游戏胶囊 + 同行朋友 + 几句话 + 截图(点开灯箱)。
+   截图大图走 ImageWarmer 预热,悬停即暖,点击秒开。 */
 
 export default function MemoriesTimeline({ entries }: { entries: Memory[] }) {
   const [open, setOpen] = useState<{ id: string; index: number } | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
   const entry = open ? entries.find((e) => e.id === open.id) : undefined;
+  const flat = entries.flatMap((e) => e.images);
 
   return (
     <>
@@ -52,6 +56,8 @@ export default function MemoriesTimeline({ entries }: { entries: Memory[] }) {
                     key={img.src}
                     type="button"
                     onClick={() => setOpen({ id: m.id, index: i })}
+                    onMouseEnter={() => setHovered(img.src)}
+                    onFocus={() => setHovered(img.src)}
                     aria-label={`查看 ${img.caption}`}
                     className="cursor-zoom-in border-2 border-foreground shadow-[4px_4px_0_0_var(--shadow)] transition-transform duration-150 hover:-translate-y-0.5"
                   >
@@ -80,6 +86,7 @@ export default function MemoriesTimeline({ entries }: { entries: Memory[] }) {
         onClose={() => setOpen(null)}
         onNavigate={(index) => setOpen({ id: open!.id, index })}
       />
+      <ImageWarmer photos={flat} hovered={hovered} />
     </>
   );
 }
