@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import CommitsBody from "@/components/widgets/CommitsBody";
 import ContactBody from "@/components/widgets/ContactBody";
 import SlinkBody from "@/components/widgets/SlinkBody";
+import StackBody from "@/components/widgets/StackBody";
 
 /* About 页的漂浮组件组外壳:拖拽 / 边缘吸附 / 同侧手风琴 / 停靠队列布局。
    组件内容在 components/widgets/ 下各自成文件,想加组件:
@@ -38,6 +39,11 @@ const GROUP = [
     id: "contact",
     title: "CONTACT.",
     body: (inColumn: boolean) => <ContactBody inColumn={inColumn} />,
+  },
+  {
+    id: "stack",
+    title: "STACK.",
+    body: (inColumn: boolean) => <StackBody inColumn={inColumn} />,
   },
   {
     id: "slink",

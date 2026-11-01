@@ -10,6 +10,15 @@ export default function Footer() {
         <span className="flex items-center gap-2">
           <span aria-hidden className="inline-block h-2 w-2 -skew-x-12 bg-accent-2" />
           <span aria-hidden className="inline-block h-2 w-2 -skew-x-12 bg-accent-3" />
+          <a
+            href="/feed.xml"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-accent"
+          >
+            RSS
+          </a>
+          <span aria-hidden>·</span>
           <span>Powered by Next.js</span>
         </span>
       </div>

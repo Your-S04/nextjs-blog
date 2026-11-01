@@ -19,10 +19,11 @@ type Contact = {
 const CONTACTS: Contact[] = [
   { label: "GitHub", handle: "@Your-S04", url: "https://github.com/Your-S04" },
   { label: "Email", handle: "235304049@qq.com", url: "mailto:235304049@qq.com" },
+  { label: "RSS", handle: "订阅kiyone.top", url: "/feed.xml" },
   { label: "Steam", handle: "1510624398", url: "https://steamcommunity.com/profiles/76561199470890126/" },
   // 育碧 Connect 没有公开主页链接,先做纯展示行(好友手动搜 ID);
   // 以后找到可挂的链接,补个 url 字段就自动变成可点击
-  { label: "Ubisoft", handle: "AI.Montreal" }, // ← 改成你自己的
+  { label: "Ubisoft", handle: "AI.Montreal" },
   // 明日方舟加好友:游戏内「好友 → 添加好友 → 我的名片」截图,
   // 建议裁成以二维码为主的近方形图,存为 public/arknights-qr.png
   // (放好之前展开会显示裂图)
