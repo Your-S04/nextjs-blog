@@ -293,3 +293,89 @@ body {
   color: var(--foreground);
   font-family: Arial, "WenQuanYi Micro Hei", "WenQuanYi Zen Hei", sans-serif;
 }
+
+/* ===== 代码高亮(rehype-highlight 输出的 hljs 类) =====
+   代码块是反色底(亮色主题=墨底,暗色/P3=纸底),所以每主题一套 token 色:
+   亮色主题配 One Dark 系(暗底),暗色/P3 配亮底系(P3 用克莱因蓝点缀)。
+   未加 layer 的规则优先级高于 Tailwind 工具类,能盖过 [&_pre_code]:text-background。 */
+:root {
+  --code-kw: #e5c07b;   /* 关键字 */
+  --code-str: #98c379;  /* 字符串 */
+  --code-num: #d19a66;  /* 数字/常量 */
+  --code-com: #8b93a1;  /* 注释 */
+  --code-fn: #61afef;   /* 函数名 */
+  --code-type: #e06c75; /* 类型/内置对象 */
+  --code-attr: #c678dd; /* 属性/变量 */
+}
+.dark {
+  --code-kw: #a626a4;
+  --code-str: #50a14f;
+  --code-num: #b76b01;
+  --code-com: #9da0a6;
+  --code-fn: #4078f2;
+  --code-type: #e45649;
+  --code-attr: #986801;
+}
+.p3 {
+  --code-kw: #1b2fd8;   /* 克莱因蓝关键字 */
+  --code-str: #0a8f43;
+  --code-num: #b45309;
+  --code-com: #6f8fc9;
+  --code-fn: #0068d6;
+  --code-type: #c62828;
+  --code-attr: #7c3aed;
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--code-com);
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag,
+.hljs-name {
+  color: var(--code-kw);
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-addition {
+  color: var(--code-str);
+}
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-meta {
+  color: var(--code-num);
+}
+.hljs-title,
+.hljs-section {
+  color: var(--code-fn);
+}
+.hljs-title.class_,
+.hljs-type,
+.hljs-built_in {
+  color: var(--code-type);
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: var(--code-attr);
+}
+.hljs-deletion {
+  color: var(--code-type);
+}
+.hljs-link {
+  color: var(--code-fn);
+  text-decoration: underline;
+}
+.hljs-strong {
+  font-weight: 700;
+}
+.hljs-emphasis {
+  font-style: italic;
+}

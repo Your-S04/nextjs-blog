@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
 import { getAllPosts, getPost } from "@/lib/posts";
 import LikeButton from "@/components/LikeButton";
 import Comments from "@/components/Comments";
@@ -57,7 +58,8 @@ export default async function PostPage({ params }: Props) {
       </header>
 
       <div className="space-y-4 leading-relaxed [&_a]:font-semibold [&_a]:text-accent [&_a:hover]:text-accent-2 [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-3 [&_blockquote]:text-muted [&_code]:rounded [&_code]:bg-surface [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_h1]:font-brand [&_h2]:mt-8 [&_h2]:border-l-4 [&_h2]:border-accent-2 [&_h2]:pl-3 [&_h2]:font-brand [&_h2]:text-xl [&_h2]:font-bold [&_li]:ml-5 [&_li]:list-disc [&_pre]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-foreground [&_pre]:p-4 [&_pre_code]:bg-transparent [&_pre_code]:text-background">
-        <ReactMarkdown>{content}</ReactMarkdown>
+        {/* 构建期高亮:围栏后写语言名(如 ```markdown)才着色,纯客户端零 JS */}
+        <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{content}</ReactMarkdown>
       </div>
 
       <div className="mt-8 border-y-2 border-border py-4">
