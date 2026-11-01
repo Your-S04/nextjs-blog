@@ -1,7 +1,7 @@
 ---
 title: MEMORY 页使用手册:发照片与写游戏记忆
 date: 2026-11-01
-tags: [memory, guide]
+tags: [memory, guide, ai-created]
 ---
 
 站点的 `/memory` 页分两块:**PHOTOS.** 摄影图集和 **GAME LOG.** 游戏记忆。

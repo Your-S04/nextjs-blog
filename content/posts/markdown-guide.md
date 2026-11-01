@@ -1,7 +1,7 @@
 ---
 title: Markdown 写法手册
 date: 2026-10-22
-tags: [markdown, guide]
+tags: [markdown, guide, ai-created]
 ---
 
 本站文章放在 `content/posts/` 下,文件名(去掉 `.md`)就是访问地址里的 slug,例如 `hello-termux.md` 对应 `/posts/hello-termux`。列表按 `date` 倒序排列,日期请写 `YYYY-MM-DD`。
