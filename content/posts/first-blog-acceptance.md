@@ -1,6 +1,6 @@
 ---
 title: A Record of “Failed” Acceptance
-date: 2026-11-1
+date: 2026-11-01
 tags: [club, blog]
 ---
 
