@@ -20,8 +20,11 @@ import StackBody from "@/components/widgets/StackBody";
    摆放状态持久化到 localStorage,刷新后恢复。 */
 
 const STATE_KEY = "kiyone-about-widgets";
+const ORDER_KEY = "kiyone-about-widget-order";
+const STACK_KEY = "kiyone-about-widget-stack";
 
 const W = 288; // 组件宽度(w-72),吸附计算用
+const MOBILE_BREAKPOINT = 768;
 const EDGE = 8; // 停靠时与视口边缘的间距
 const GAP = 8; // 同侧停靠队列中相邻组件的间距
 const SNAP = 48; // 距边缘多少 px 内出现吸附提示
@@ -55,6 +58,20 @@ const GROUP = [
 type WidgetId = (typeof GROUP)[number]["id"];
 type Dock = "left" | "right";
 type Pos = { x: number; y: number };
+const DEFAULT_ORDER: WidgetId[] = GROUP.map((g) => g.id);
+
+function readOrder(key: string): WidgetId[] {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(key) ?? "null");
+    if (Array.isArray(parsed)) {
+      const saved = parsed.filter((id): id is WidgetId => DEFAULT_ORDER.includes(id));
+      return [...new Set([...saved, ...DEFAULT_ORDER])];
+    }
+  } catch {
+    /* 无效存档回退到组件清单顺序 */
+  }
+  return DEFAULT_ORDER;
+}
 
 /* 摆放状态:停靠态(dock 非 null)与自由态(pos)互斥 */
 type WidgetState = {
@@ -87,9 +104,14 @@ export default function AboutWidgets() {
     dx: number;
     dy: number;
     moved: boolean;
+    side: Dock | null;
   } | null>(null);
 
   const [widgets, setWidgets] = useState<Record<WidgetId, WidgetState>>(DEFAULT_STATE);
+  const [dockOrder, setDockOrder] = useState<WidgetId[]>(DEFAULT_ORDER);
+  const [stackOrder, setStackOrder] = useState<WidgetId[]>(DEFAULT_ORDER);
+  const [restored, setRestored] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [snap, setSnap] = useState<Dock | null>(null); // 拖动中的吸附提示
   const [draggingId, setDraggingId] = useState<WidgetId | null>(null);
 
@@ -104,6 +126,23 @@ export default function AboutWidgets() {
   }, []);
 
   /* 挂载恢复摆放状态;没有存档则保持默认(全折叠停靠右侧) */
+  useEffect(() => {
+    const media = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const syncViewport = () => {
+      setIsMobile(media.matches);
+      if (media.matches) {
+        setWidgets((current) =>
+          Object.fromEntries(
+            GROUP.map((g) => [g.id, { ...current[g.id], expanded: false, dock: "right", pos: null }]),
+          ) as Record<WidgetId, WidgetState>,
+        );
+      }
+    };
+    syncViewport();
+    media.addEventListener("change", syncViewport);
+    return () => media.removeEventListener("change", syncViewport);
+  }, []);
+
   useEffect(() => {
     let restored: Record<WidgetId, WidgetState> = DEFAULT_STATE;
     try {
@@ -128,6 +167,11 @@ export default function AboutWidgets() {
               restored[g.id] = { ...st, pos: clampPos(st.pos, rootRefs.current[g.id]) };
             }
           }
+          if (window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`).matches) {
+            for (const g of GROUP) {
+              restored[g.id] = { ...restored[g.id], expanded: false, dock: "right", pos: null };
+            }
+          }
         }
       }
     } catch {
@@ -137,23 +181,41 @@ export default function AboutWidgets() {
        非级联更新;useSyncExternalStore 对这种一次性恢复过重 */
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setWidgets(restored);
+    setDockOrder(readOrder(ORDER_KEY));
+    setStackOrder(readOrder(STACK_KEY));
+    setRestored(true);
   }, [clampPos]);
 
   /* 摆放状态落盘(外部系统同步,放 effect 正合适) */
   useEffect(() => {
+    if (!restored) return;
     try {
       localStorage.setItem(STATE_KEY, JSON.stringify(widgets));
     } catch {
       /* 隐私模式等场景静默失败 */
     }
-  }, [widgets]);
+  }, [widgets, restored]);
 
-  /* 视口尺寸变化:重算停靠队列与浮窗夹取(靠重渲染触发) */
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      localStorage.setItem(ORDER_KEY, JSON.stringify(dockOrder));
+      localStorage.setItem(STACK_KEY, JSON.stringify(stackOrder));
+    } catch {
+      /* 隐私模式等场景静默失败 */
+    }
+  }, [dockOrder, stackOrder, restored]);
+
+  /* 视口或滚动位置变化:重算停靠队列与浮窗夹取(靠重渲染触发) */
   const [, setTick] = useState(0);
   useEffect(() => {
     const onResize = () => setTick((t) => t + 1);
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener("scroll", onResize, { passive: true });
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onResize);
+    };
   }, []);
 
   /* 展开/收起:展开时收起同侧已展开的其他组件(浮窗不受影响) */
@@ -174,7 +236,19 @@ export default function AboutWidgets() {
   }, []);
 
   /* 停靠到某侧:并入该侧队列;若带着展开态入场,收起该侧原展开的组件 */
-  const dockTo = useCallback((id: WidgetId, side: Dock) => {
+  const dockTo = useCallback((id: WidgetId, side: Dock, clientY: number) => {
+    const onSide = dockOrder.filter((other) => other !== id && widgets[other].dock === side);
+    const before = onSide.find((other) => {
+      const rect = rootRefs.current[other]?.getBoundingClientRect();
+      return rect !== undefined && clientY < rect.top + rect.height / 2;
+    });
+    setDockOrder((current) => {
+      const next = current.filter((other) => other !== id);
+      const anchor = before ?? onSide.at(-1);
+      const index = anchor ? next.indexOf(anchor) + (before ? 0 : 1) : next.length;
+      next.splice(index, 0, id);
+      return next;
+    });
     setWidgets((ws) => {
       const me = ws[id];
       const mapped = { ...ws };
@@ -187,6 +261,10 @@ export default function AboutWidgets() {
       mapped[id] = { ...me, dock: side, pos: null };
       return mapped;
     });
+  }, [dockOrder, widgets]);
+
+  const bringToFront = useCallback((id: WidgetId) => {
+    setStackOrder((current) => [...current.filter((other) => other !== id), id]);
   }, []);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: WidgetId) => {
@@ -194,7 +272,7 @@ export default function AboutWidgets() {
     const el = rootRefs.current[id];
     if (!el) return;
     const r = el.getBoundingClientRect();
-    dragRef.current = { id, dx: e.clientX - r.left, dy: e.clientY - r.top, moved: false };
+    dragRef.current = { id, dx: e.clientX - r.left, dy: e.clientY - r.top, moved: false, side: widgets[id].dock };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
@@ -212,9 +290,8 @@ export default function AboutWidgets() {
       ...ws,
       [id]: { ...ws[id], dock: null, pos: clampPos({ x, y }, rootRefs.current[id]) },
     }));
-    setSnap(
-      x <= SNAP ? "left" : x >= window.innerWidth - W - SNAP ? "right" : null,
-    );
+    d.side = x <= SNAP ? "left" : x >= window.innerWidth - W - SNAP ? "right" : null;
+    setSnap(d.side);
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>, id: WidgetId) => {
@@ -230,8 +307,8 @@ export default function AboutWidgets() {
       return;
     }
 
-    if (snap) {
-      dockTo(id, snap); // 松手停在边缘 → 停靠
+    if (d.side) {
+      dockTo(id, d.side, e.clientY); // 松手停在边缘 → 按纵向位置插入队列
     } else {
       /* 自由态:从 DOM 读最终位置夹取(比闭包里的 state 可靠) */
       const el = rootRefs.current[id];
@@ -253,21 +330,27 @@ export default function AboutWidgets() {
 
   /* ===== 停靠队列布局:同侧组件从视口顶排到底,展开者占满剩余高度 ===== */
   const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+  const footerTop = typeof document !== "undefined"
+    ? document.querySelector("footer")?.getBoundingClientRect().top ?? vh
+    : vh;
+  const mobileBottom = Math.min(vh - EDGE, footerTop - GAP);
   const tops: Partial<Record<WidgetId, { side: Dock; top: number; height?: number }>> = {};
   for (const side of ["left", "right"] as Dock[]) {
-    const ids = GROUP.filter((g) => widgets[g.id].dock === side).map((g) => g.id);
+    const ids = dockOrder.filter((id) => widgets[id].dock === side);
     if (ids.length === 0) continue;
     const expandedIds = ids.filter((id) => widgets[id].expanded);
     const collapsedCount = ids.length - expandedIds.length;
-    let y = EDGE;
     /* 规则保证同侧最多一个展开,这里防御式均分剩余高度 */
-    const expH =
+    const availableExpH =
       expandedIds.length > 0
         ? Math.floor(
             Math.max(COLLAPSED_H, vh - 2 * EDGE - collapsedCount * COLLAPSED_H - (ids.length - 1) * GAP) /
               expandedIds.length,
           )
         : 0;
+    const expH = isMobile ? Math.min(availableExpH, Math.floor(vh * 0.45)) : availableExpH;
+    const queueHeight = collapsedCount * COLLAPSED_H + expandedIds.length * expH + (ids.length - 1) * GAP;
+    let y = isMobile ? mobileBottom - queueHeight : EDGE;
     for (const id of ids) {
       const exp = widgets[id].expanded;
       tops[id] = { side, top: y, ...(exp && expandedIds.length > 0 ? { height: expH } : {}) };
@@ -304,6 +387,7 @@ export default function AboutWidgets() {
         } else {
           style = {};
         }
+        style.zIndex = isDragging ? 100 : 60 + stackOrder.indexOf(g.id);
 
         return (
           <div
@@ -313,9 +397,10 @@ export default function AboutWidgets() {
             }}
             aria-label={g.title}
             style={style}
-            className={`fixed w-72 border-2 border-foreground bg-background shadow-[5px_5px_0_0_var(--shadow)] ${
+            onPointerDown={() => bringToFront(g.id)}
+            className={`fixed ${isMobile ? "w-[min(85vw,288px)]" : "w-72"} border-2 border-foreground bg-background shadow-[5px_5px_0_0_var(--shadow)] ${
               inColumn ? "flex flex-col" : ""
-            } ${isDragging ? "z-[70] select-none" : "z-[60]"}`}
+            } ${isDragging ? "select-none" : ""}`}
           >
             {/* 标题条 = 拖动把手 + 点击展开;touch-none 防止触屏拖动时页面滚动 */}
             <div
